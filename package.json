@@ -1,0 +1,17 @@
+{
+	"name": "mingame",
+	"version": "0.2.1",
+	"description": "mingame",
+	"main": "src/index.js",
+	"scripts": {
+		"build": "webpack --config-name production",
+		"dev": "webpack-dev-server --config-name development"
+	},
+	"dependencies": {
+		"address": "^1.1.2",
+		"pixi.js": "^8.0.5",
+		"webpack": "^5.90.3",
+		"webpack-cli": "^5.1.4",
+		"webpack-dev-server": "^5.0.2"
+	}
+}
