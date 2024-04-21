@@ -5,7 +5,6 @@ import { Block } from './block.js';
 import { rectCircleCollide, rectToRectCollide } from './collisionDetectionFunc.js';
 // import { blendModes } from 'pixi';
 import { clamp } from './clamp.js';
-import { movePlatform } from './movePlatformFunc.js';
 // import { offset } from 'pixi/core/globals.js';
 
 // Asynchronous IIFE
@@ -64,26 +63,22 @@ import { movePlatform } from './movePlatformFunc.js';
 	app.stage.addChild(smallPlatform);
 	app.stage.addChild(blueBlock);
 
-	// let isDown = false;
-	// window.addEventListener('mousedown', function() {
-	// 	isDown = true;
-	// });
+	let isDown = false;
+	window.addEventListener('mousedown', function() {
+		isDown = true;
+	});
 
-	// window.addEventListener('mousemove', (event) => {
-	// 	let pos = event.clientX;
-	// 	if (isDown) {
-	// 		smallPlatform.x = clamp(pos, clampMin, clampMax);
-	// 		// console.log(smallPlatform.x, smallPlatform.y)
-	// 	}
-	// });
+	window.addEventListener('mousemove', (event) => {
+		let pos = event.clientX;
+		if (isDown) {
+			smallPlatform.x = clamp(pos, clampMin, clampMax);
+		}
+	});
 	
 	
 	ticker.stop();
 	ticker.add((deltaTime) => {
 		ball.move();
-		// clamp(value, clampMin, clampMax);
-		movePlatform(currentPlatform, clampMin, clampMax);
-
 
 		if (rectCircleCollide(smallPlatform, ball)) { 
 
