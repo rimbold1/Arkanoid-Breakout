@@ -20,7 +20,7 @@ import { clamp } from './clamp.js';
 	// init global constances
 	
 	const background = new Sprite(gameTextures.fieldTexture);
-	const ball = new Ball(gameTextures.ironBallTexture, app.screen/2, app.screen/2, 1, -5.5);
+	const ball = new Ball(gameTextures.ironBallTexture, app.screen/2, app.screen/2, 0, -5.5);
 	const smallPlatform = new Sprite(gameTextures.smallPlatformTexture);
 	// const blueBlock = new Sprite(gameTextures.blueBlockTexture);
 	// const greenBlock = new Sprite(gameTextures.greenBlockTexture);
@@ -121,7 +121,6 @@ import { clamp } from './clamp.js';
 	ticker.add((ticker) => {
 		
 		ball.move(ticker);
-		console.log(ticker)
 
 		if (rectCircleCollide(smallPlatform, ball)) { 
 
@@ -158,21 +157,35 @@ import { clamp } from './clamp.js';
 				if (side === 'top') { 
 					ball.y = element.y - element.height / 2 - ball.radius ;
 					ball.ySpeed = -ball.ySpeed;
+					element.x = null;
+					element.y = null;
+					app.stage.removeChild(element);
+					break;
 				}else if (side === 'bottom') {
 					ball.y =  element.y + element.height/2 + ball.radius;
 					ball.ySpeed = -ball.ySpeed;
+					element.x = null;
+					element.y = null;
+					app.stage.removeChild(element);
+					break;
 				}else if (side === 'right') {
 					ball.x = element.x + element.width/2 + ball.radius;
 					ball.xSpeed = -ball.xSpeed;
+					element.x = null;
+					element.y = null;
+					app.stage.removeChild(element);
+					break;
 				}else if (side === 'left') {
 					ball.x = element.x - element.width/2 - ball.radius;
 					ball.xSpeed = -ball.xSpeed;
+					element.x = null;
+					element.y = null;
+					app.stage.removeChild(element);
+					break;
 				}
 				greyBonus.x = element.x;
 				greyBonus.y = element.y;
-				element.x = null;
-				element.y = null;
-				app.stage.removeChild(element);
+				
 				app.stage.addChild(greyBonus);
 				
 			}
