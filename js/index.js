@@ -1,11 +1,8 @@
 import { Application, Assets, Sprite, Ticker, Graphics } from 'pixi.js';
 import { gameTextures } from './texturesPaths.js';
 import { Ball } from './ball.js';
-import { Block } from './block.js';
 import { rectCircleCollide, rectToRectCollide } from './collisionDetectionFunc.js';
-// import { blendModes } from 'pixi';
 import { clamp } from './clamp.js';
-// import { offset } from 'pixi/core/globals.js';
 
 // Asynchronous IIFE
 (async () => {
@@ -25,11 +22,11 @@ import { clamp } from './clamp.js';
 	const background = new Sprite(gameTextures.fieldTexture);
 	const ball = new Ball(gameTextures.ironBallTexture, app.screen/2, app.screen/2, 4, -6.5);
 	const smallPlatform = new Sprite(gameTextures.smallPlatformTexture);
-	const blueBlock = new Sprite(gameTextures.blueBlockTexture);
-	const greenBlock = new Sprite(gameTextures.greenBlockTexture);
-	const redBlock = new Sprite(gameTextures.redBlockTexture);
-	const orangeBlock = new Sprite(gameTextures.orangeBlockTexture);
-	const yellowBlock = new Sprite(gameTextures.orangeBlockTexture);
+	// const blueBlock = new Sprite(gameTextures.blueBlockTexture);
+	// const greenBlock = new Sprite(gameTextures.greenBlockTexture);
+	// const redBlock = new Sprite(gameTextures.redBlockTexture);
+	// const orangeBlock = new Sprite(gameTextures.orangeBlockTexture);
+	// const yellowBlock = new Sprite(gameTextures.orangeBlockTexture);
 	const greyBonus = new Sprite(gameTextures.greyBonusTexture);
 	const ticker = new Ticker();
 	const graphics = new Graphics();
@@ -53,21 +50,46 @@ import { clamp } from './clamp.js';
 
 	// blueBlock.x = app.screen.width/2;
 	// blueBlock.y = 200;
-	blueBlock.anchor.set(0.5);
+	// blueBlock.anchor.set(0.5);
 
-	const blockArray = [];
-	let posX = 170;
-	for (let i = 0; i < 6; i++) {
-		const block = new Sprite(gameTextures.blueBlockTexture);
-		block.anchor.set(0.5);
-		block.x = posX;
-		block.y = 80;
-		blockArray.push(block);
-		posX += 60;
-	}
-
+	const brickArray = [];
+	const map = [
+		[0, 0, 0, 0, 0, 0, 0, 0],
+		[1, 1, 1, 1, 1, 1, 1, 1],
+		[2, 2, 2, 2, 2, 2, 2, 2],
+		[3, 3, 3, 3, 3, 3, 3, 3]
+	];
 	
-	console.log(blockArray)
+	const textures = {
+		0: gameTextures.redBlockTexture,
+		1: gameTextures.orangeBlockTexture,
+		2: gameTextures.yellowBlockTexture,
+		3: gameTextures.blueBlockTexture
+	};
+
+
+	function addBricks(map, textures) {
+		let xPos = 115;
+		let yPos = 60;
+		for (let i = 0; i < map.length; i++) {
+			const element = map[i];
+			
+			for (let j = 0; j < element.length; j++) {
+				const item = element[j];
+				
+				const brick = app.stage.addChild(new Sprite(textures[item]));
+				brick.anchor.set(0.5);
+				brick.x = xPos;
+				brick.y = yPos;
+				brickArray.push(brick);
+				xPos += 60;
+			}
+			yPos += 30;
+			xPos = 115;
+		}
+	};
+
+	addBricks(map, textures);
 
 	greyBonus.anchor.set(0.5);
 	greyBonus.fall = function() {
@@ -78,10 +100,9 @@ import { clamp } from './clamp.js';
 	app.stage.addChild(background);
 	app.stage.addChild(ball);
 	app.stage.addChild(smallPlatform);
-	blockArray.forEach((block) => {
+	brickArray.forEach((block) => { // Adding blocks to the game stage.
 		app.stage.addChild(block);
 	});
-	// app.stage.addChild(blueBlock);
 
 	let isDown = false;
 	window.addEventListener('mousedown', function() {
@@ -98,7 +119,7 @@ import { clamp } from './clamp.js';
 	
 	ticker.stop();
 	ticker.add((deltaTime) => {
-		ball.move();
+		ball.move(deltaTime);
 
 		if (rectCircleCollide(smallPlatform, ball)) { 
 
@@ -107,10 +128,10 @@ import { clamp } from './clamp.js';
 
 		}
 
-		for (let i = 0; i < blockArray.length; i++) {
+		for (let i = 0; i < brickArray.length; i++) {
 
-			const element = blockArray[i];
-			if (blockArray.every(element => element.x === null && element.y === null )) {
+			const element = brickArray[i];
+			if (brickArray.every(element => element.x === null && element.y === null )) {
 				ticker.stop();
 			}
 
