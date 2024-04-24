@@ -20,7 +20,7 @@ import { clamp } from './clamp.js';
 	// init global constances
 	
 	const background = new Sprite(gameTextures.fieldTexture);
-	const ball = new Ball(gameTextures.ironBallTexture, app.screen/2, app.screen/2, 4, -6.5);
+	const ball = new Ball(gameTextures.ironBallTexture, app.screen/2, app.screen/2, 1, -5.5);
 	const smallPlatform = new Sprite(gameTextures.smallPlatformTexture);
 	// const blueBlock = new Sprite(gameTextures.blueBlockTexture);
 	// const greenBlock = new Sprite(gameTextures.greenBlockTexture);
@@ -118,8 +118,10 @@ import { clamp } from './clamp.js';
 	
 	
 	ticker.stop();
-	ticker.add((deltaTime) => {
-		ball.move(deltaTime);
+	ticker.add((ticker) => {
+		
+		ball.move(ticker);
+		console.log(ticker)
 
 		if (rectCircleCollide(smallPlatform, ball)) { 
 
@@ -203,6 +205,8 @@ import { clamp } from './clamp.js';
 		}
 
 	});
+	
 	ticker.start();
+	
 
 })();
