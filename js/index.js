@@ -33,18 +33,16 @@ import { clamp } from './clamp.js';
 		fill: '#ff9999',    // Gradient fill (array for gradient)
 		stroke: '#4a1850',
 	});
-	const scoreCount = new Text({text: "0",
-		style: scoreStyle
+	
+	let score = 0;
+	const scoreCount = new Text({text : score,
+		style : scoreStyle
 	});
 
-
-	
-	
 	const bonusVelocity = 2.5;
 	let clampMin = 60;
 	let clampMax = 590;
 	let currentPlatform = smallPlatform;
-	
 	
 	graphics.rect(50, 50, 650, 800);
 	graphics.fill(0xde3249);
@@ -70,14 +68,16 @@ import { clamp } from './clamp.js';
 	];
 	
 	const textures = {
-		0: gameTextures.redBlockTexture,
-		1: gameTextures.orangeBlockTexture,
-		2: gameTextures.yellowBlockTexture,
-		3: gameTextures.blueBlockTexture
+		0: gameTextures.redBlockTexture, // Червоний
+		1: gameTextures.orangeBlockTexture, // Помаранчевий
+		2: gameTextures.yellowBlockTexture, // Жовтий
+		3: gameTextures.blueBlockTexture //Голуби
 	};
 
-	scoreCount.x = 40;
-	scoreCount.y = 30;
+	scoreCount.x = app.screen.width/2;
+	scoreCount.anchor.set(0.5)
+	scoreCount.y = 35;
+	app.stage.addChild(scoreCount);
 
 	function addBricks(map, textures) { // Building level by adding bricks to the game
 		let xPos = 115;
@@ -88,7 +88,9 @@ import { clamp } from './clamp.js';
 			for (let j = 0; j < element.length; j++) {
 				const item = element[j];
 				
+				
 				const brick = app.stage.addChild(new Sprite(textures[item]));
+				brick.type = item;
 				brick.anchor.set(0.5);
 				brick.x = xPos;
 				brick.y = yPos;
@@ -135,20 +137,6 @@ import { clamp } from './clamp.js';
 		
 		ball.move(ticker);
 
-		// function getSide(collideTarget) {
-		// 	const sidesDistances = { 
-		// 		left: Math.abs(collideTarget.x - collideTarget.width / 2 - (ball.x + ball.radius)), 
-		// 		right: Math.abs(ball.x - ball.radius - (collideTarget.x + collideTarget.width / 2)), 
-		// 		top: Math.abs(collideTarget.y - collideTarget.height / 2 - (ball.y + ball.radius)), 
-		// 		bottom: Math.abs(ball.y - ball.radius - (collideTarget.y + collideTarget.height / 2)), 
-		// 	};
-		// 	for (const key in sidesDistances) {
-		// 		if (key) {
-					
-		// 		}
-		// 	}
-		// }
-
 		if (rectCircleCollide(smallPlatform, ball)) { 
 			const sidesDistances = { 
 				left: Math.abs(smallPlatform.x - smallPlatform.width / 2 - (ball.x + ball.radius)), 
@@ -168,10 +156,10 @@ import { clamp } from './clamp.js';
 		for (let i = 0; i < brickArray.length; i++) {
 
 			const element = brickArray[i];
+
 			if (brickArray.every(element => element.x === null && element.y === null )) { // Перевірка на наявність блоків, якщо  немає то стоп-гра.
 				ticker.stop();
 			}
-			
 
 			if (rectCircleCollide(element, ball)) {
 
@@ -204,11 +192,23 @@ import { clamp } from './clamp.js';
 					ball.x = element.x - element.width/2 - ball.radius;
 					ball.xSpeed = -ball.xSpeed;
 				}
-
+				
+				if (element.type === 3) {
+					score += 10;
+				}else if (element.type === 2) {
+					score += 20;
+				}else if (element.type === 1) {
+					score += 30;
+				}else if (element.type === 0) {
+						score += 40;
+				}
 				greyBonus.x = element.x;
 				greyBonus.y = element.y;
 				element.x = null;
 				element.y = null;
+				
+				scoreCount.text = score;
+				
 				app.stage.removeChild(element);
 				app.stage.addChild(greyBonus);
 				break;
