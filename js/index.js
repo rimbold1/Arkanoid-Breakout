@@ -1,4 +1,4 @@
-import { Application, Assets, Sprite, Ticker, Graphics } from 'pixi.js';
+import { Application, Assets, Sprite, Ticker, Graphics, Text, TextStyle } from 'pixi.js';
 import { gameTextures } from './texturesPaths.js';
 import { Ball } from './ball.js';
 import { rectCircleCollide, rectToRectCollide } from './collisionDetectionFunc.js';
@@ -20,16 +20,25 @@ import { clamp } from './clamp.js';
 	// init global constances
 	
 	const background = new Sprite(gameTextures.fieldTexture);
-	const ball = new Ball(gameTextures.ironBallTexture, app.screen/2, app.screen/2, 0, -5.5);
+	const ball = new Ball(gameTextures.ironBallTexture, app.screen/2, app.screen/2, 0, -7);
 	const smallPlatform = new Sprite(gameTextures.smallPlatformTexture);
-	// const blueBlock = new Sprite(gameTextures.blueBlockTexture);
-	// const greenBlock = new Sprite(gameTextures.greenBlockTexture);
-	// const redBlock = new Sprite(gameTextures.redBlockTexture);
-	// const orangeBlock = new Sprite(gameTextures.orangeBlockTexture);
-	// const yellowBlock = new Sprite(gameTextures.orangeBlockTexture);
 	const greyBonus = new Sprite(gameTextures.greyBonusTexture);
 	const ticker = new Ticker();
 	const graphics = new Graphics();
+	const scoreStyle = new TextStyle({
+		fontFamily: 'Arial',            // Font family
+		fontSize: 26,                    // Font size
+		fontStyle: 'italic',             // Style of font: normal, italic, or oblique
+		fontWeight: 'bold',
+		fill: '#ff9999',    // Gradient fill (array for gradient)
+		stroke: '#4a1850',
+	});
+	const scoreCount = new Text({text: "0",
+		style: scoreStyle
+	});
+
+
+	
 	
 	const bonusVelocity = 2.5;
 	let clampMin = 60;
@@ -67,8 +76,10 @@ import { clamp } from './clamp.js';
 		3: gameTextures.blueBlockTexture
 	};
 
+	scoreCount.x = 40;
+	scoreCount.y = 30;
 
-	function addBricks(map, textures) {
+	function addBricks(map, textures) { // Building level by adding bricks to the game
 		let xPos = 115;
 		let yPos = 60;
 		for (let i = 0; i < map.length; i++) {
@@ -103,6 +114,7 @@ import { clamp } from './clamp.js';
 	brickArray.forEach((block) => { // Adding blocks to the game stage.
 		app.stage.addChild(block);
 	});
+	app.stage.addChild(scoreCount); // Adding score counter.
 
 	let isDown = false;
 	window.addEventListener('mousedown', function() {
@@ -117,12 +129,36 @@ import { clamp } from './clamp.js';
 	});
 	
 	
+	
 	ticker.stop();
 	ticker.add((ticker) => {
 		
 		ball.move(ticker);
 
+		// function getSide(collideTarget) {
+		// 	const sidesDistances = { 
+		// 		left: Math.abs(collideTarget.x - collideTarget.width / 2 - (ball.x + ball.radius)), 
+		// 		right: Math.abs(ball.x - ball.radius - (collideTarget.x + collideTarget.width / 2)), 
+		// 		top: Math.abs(collideTarget.y - collideTarget.height / 2 - (ball.y + ball.radius)), 
+		// 		bottom: Math.abs(ball.y - ball.radius - (collideTarget.y + collideTarget.height / 2)), 
+		// 	};
+		// 	for (const key in sidesDistances) {
+		// 		if (key) {
+					
+		// 		}
+		// 	}
+		// }
+
 		if (rectCircleCollide(smallPlatform, ball)) { 
+			const sidesDistances = { 
+				left: Math.abs(smallPlatform.x - smallPlatform.width / 2 - (ball.x + ball.radius)), 
+				right: Math.abs(ball.x - ball.radius - (smallPlatform.x + smallPlatform.width / 2)), 
+				top: Math.abs(smallPlatform.y - smallPlatform.height / 2 - (ball.y + ball.radius)), 
+				bottom: Math.abs(ball.y - ball.radius - (smallPlatform.y + smallPlatform.height / 2)), 
+			};
+
+			let currentMin = Infinity; 
+			let side = null; 
 
 			ball.xSpeed = -(smallPlatform.x - ball.x) / smallPlatform.width / 2 * 25;
 			ball.ySpeed = -ball.ySpeed;
@@ -132,9 +168,10 @@ import { clamp } from './clamp.js';
 		for (let i = 0; i < brickArray.length; i++) {
 
 			const element = brickArray[i];
-			if (brickArray.every(element => element.x === null && element.y === null )) {
+			if (brickArray.every(element => element.x === null && element.y === null )) { // Перевірка на наявність блоків, якщо  немає то стоп-гра.
 				ticker.stop();
 			}
+			
 
 			if (rectCircleCollide(element, ball)) {
 
@@ -157,37 +194,24 @@ import { clamp } from './clamp.js';
 				if (side === 'top') { 
 					ball.y = element.y - element.height / 2 - ball.radius ;
 					ball.ySpeed = -ball.ySpeed;
-					element.x = null;
-					element.y = null;
-					app.stage.removeChild(element);
-					break;
 				}else if (side === 'bottom') {
 					ball.y =  element.y + element.height/2 + ball.radius;
 					ball.ySpeed = -ball.ySpeed;
-					element.x = null;
-					element.y = null;
-					app.stage.removeChild(element);
-					break;
 				}else if (side === 'right') {
 					ball.x = element.x + element.width/2 + ball.radius;
 					ball.xSpeed = -ball.xSpeed;
-					element.x = null;
-					element.y = null;
-					app.stage.removeChild(element);
-					break;
 				}else if (side === 'left') {
 					ball.x = element.x - element.width/2 - ball.radius;
 					ball.xSpeed = -ball.xSpeed;
-					element.x = null;
-					element.y = null;
-					app.stage.removeChild(element);
-					break;
 				}
+
 				greyBonus.x = element.x;
 				greyBonus.y = element.y;
-				
+				element.x = null;
+				element.y = null;
+				app.stage.removeChild(element);
 				app.stage.addChild(greyBonus);
-				
+				break;
 			}
 		}
 			
