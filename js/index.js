@@ -130,9 +130,12 @@ import { clamp } from './clamp.js';
 		}
 	});
 	
+	window.addEventListener('mouseup', function () {
+		isDown = false;
+	});
 	
 	
-	ticker.stop();
+	// ticker.stop();
 	ticker.add((ticker) => {
 		
 		ball.move(ticker);
