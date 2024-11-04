@@ -47,20 +47,17 @@ import { clamp } from './clamp.js';
 	graphics.rect(50, 50, 650, 800);
 	graphics.fill(0xde3249);
 
-	ball.x = app.screen.width/2;
-	ball.y = 400;
-
 	// moving platfrom basic settings (position and anchor)
 	currentPlatform.x = app.screen.width/2;
 	currentPlatform.y = 770;
 	currentPlatform.anchor.set(0.5);
 
-	// blueBlock.x = app.screen.width/2;
-	// blueBlock.y = 200;
-	// blueBlock.anchor.set(0.5);
+	ball.x = currentPlatform.x;
+	ball.y = currentPlatform.y-20;
 
 	const brickArray = [];
 	const map = [
+		[3, 3, 3, 3, 3, 3, 3, 3],
 		[0, 0, 0, 0, 0, 0, 0, 0],
 		[1, 1, 1, 1, 1, 1, 1, 1],
 		[2, 2, 2, 2, 2, 2, 2, 2],
@@ -81,13 +78,12 @@ import { clamp } from './clamp.js';
 
 	function addBricks(map, textures) { // Building level by adding bricks to the game
 		let xPos = 115;
-		let yPos = 60;
+		let yPos = 200;
 		for (let i = 0; i < map.length; i++) {
 			const element = map[i];
 			
 			for (let j = 0; j < element.length; j++) {
 				const item = element[j];
-				
 				
 				const brick = app.stage.addChild(new Sprite(textures[item]));
 				brick.type = item;
@@ -118,7 +114,10 @@ import { clamp } from './clamp.js';
 	});
 	app.stage.addChild(scoreCount); // Adding score counter.
 
-	let isDown = false;
+
+	// Moving platform events
+	let isDown = true;
+	let isNot = true;
 	window.addEventListener('mousedown', function() {
 		isDown = true;
 	});
@@ -126,19 +125,31 @@ import { clamp } from './clamp.js';
 	window.addEventListener('mousemove', (event) => {
 		let pos = event.clientX;
 		if (isDown) {
-			smallPlatform.x = clamp(pos, clampMin, clampMax);
+			currentPlatform.x = clamp(pos, clampMin, clampMax);
 		}
+		if (isNot === true) {
+			ball.x = currentPlatform.x;
+			ball.y = currentPlatform.y-20;
+		}
+
 	});
 	
 	window.addEventListener('mouseup', function () {
-		isDown = false;
+		// isDown = false;
 	});
 	
+	let startMovement = false;
+	window.addEventListener('click', function() {
+		startMovement = true;
+		isNot = false;
+	});
 	
 	// ticker.stop();
 	ticker.add((ticker) => {
 		
-		ball.move(ticker);
+		if (startMovement === true) {
+			ball.move(ticker)
+		}
 
 		if (rectCircleCollide(smallPlatform, ball)) { 
 			const sidesDistances = { 
@@ -159,8 +170,8 @@ import { clamp } from './clamp.js';
 		for (let i = 0; i < brickArray.length; i++) {
 
 			const element = brickArray[i];
-
-			if (brickArray.every(element => element.x === null && element.y === null )) { // Перевірка на наявність блоків, якщо  немає то стоп-гра.
+			// Перевірка на наявність блоків, якщо  немає то стоп-гра.
+			if (brickArray.every(element => element.x === null && element.y === null )) { 
 				ticker.stop();
 			}
 
