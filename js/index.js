@@ -3,6 +3,7 @@ import { gameTextures } from './texturesPaths.js';
 import { Ball } from './ball.js';
 import { rectCircleCollide, rectToRectCollide } from './collisionDetectionFunc.js';
 import { clamp } from './clamp.js';
+import { Bonus } from './bonus.js';
 
 // Asynchronous IIFE
 (async () => {
@@ -21,8 +22,10 @@ import { clamp } from './clamp.js';
 	
 	const background = new Sprite(gameTextures.fieldTexture);
 	const ball = new Ball(gameTextures.ironBallTexture, app.screen/2, app.screen/2, 0, -7);
-	const smallPlatform = new Sprite(gameTextures.smallPlatformTexture);
-	const greyBonus = new Sprite(gameTextures.greyBonusTexture);
+	const currentPaddle = new Sprite(gameTextures.smallPlatformTexture);
+	const expandBonus = new Bonus(gameTextures.expandBonusTexture);
+	const narrowBonus = new Bonus(gameTextures.narrowBonusTexture);
+	const splitBonus = new Bonus(gameTextures.smallPlatformTexture);
 	const ticker = new Ticker();
 	const graphics = new Graphics();
 	const scoreStyle = new TextStyle({
@@ -34,15 +37,18 @@ import { clamp } from './clamp.js';
 		stroke: '#4a1850',
 	});
 	
+	const ballsArray = [];
+	ballsArray.push(ball);
+
 	let score = 0;
 	const scoreCount = new Text({text : score,
 		style : scoreStyle
 	});
 
-	const bonusVelocity = 2.5;
+	// const bonusVelocity = 2.5;
 	let clampMin = 60;
 	let clampMax = 590;
-	let currentPlatform = smallPlatform;
+	let currentPlatform = currentPaddle;
 	
 	graphics.rect(50, 50, 650, 800);
 	graphics.fill(0xde3249);
@@ -86,6 +92,7 @@ import { clamp } from './clamp.js';
 				const item = element[j];
 				
 				const brick = app.stage.addChild(new Sprite(textures[item]));
+				brick.randomNum = Math.floor(Math.random()*16);
 				brick.type = item;
 				brick.anchor.set(0.5);
 				brick.x = xPos;
@@ -100,15 +107,15 @@ import { clamp } from './clamp.js';
 
 	addBricks(map, textures);
 
-	greyBonus.anchor.set(0.5);
-	greyBonus.fall = function() {
-		this.y += bonusVelocity;
-	}
+	// expandBonus.anchor.set(0.5);
+	// expandBonus.fall = function() {
+	// 	this.y += bonusVelocity;
+	// }
 
 	// adding object to the stage
 	app.stage.addChild(background);
 	app.stage.addChild(ball);
-	app.stage.addChild(smallPlatform);
+	app.stage.addChild(currentPaddle);
 	brickArray.forEach((block) => { // Adding blocks to the game stage.
 		app.stage.addChild(block);
 	});
@@ -138,31 +145,35 @@ import { clamp } from './clamp.js';
 		// isDown = false;
 	});
 	
-	let startMovement = false;
+	let movementReady = false;
 	window.addEventListener('click', function() {
-		startMovement = true;
+		movementReady = true;
 		isNot = false;
 	});
 	
-	// ticker.stop();
+
+	
 	ticker.add((ticker) => {
 		
-		if (startMovement === true) {
-			ball.move(ticker)
+		if (movementReady === true) {
+			for (let i = 0; i < ballsArray.length; i++) {
+				const element = ballsArray[i];
+				element.move(ticker);
+			}
 		}
 
-		if (rectCircleCollide(smallPlatform, ball)) { 
+		if (rectCircleCollide(currentPaddle, ball)) { 
 			const sidesDistances = { 
-				left: Math.abs(smallPlatform.x - smallPlatform.width / 2 - (ball.x + ball.radius)), 
-				right: Math.abs(ball.x - ball.radius - (smallPlatform.x + smallPlatform.width / 2)), 
-				top: Math.abs(smallPlatform.y - smallPlatform.height / 2 - (ball.y + ball.radius)), 
-				bottom: Math.abs(ball.y - ball.radius - (smallPlatform.y + smallPlatform.height / 2)), 
+				left: Math.abs(currentPaddle.x - currentPaddle.width / 2 - (ball.x + ball.radius)), 
+				right: Math.abs(ball.x - ball.radius - (currentPaddle.x + currentPaddle.width / 2)), 
+				top: Math.abs(currentPaddle.y - currentPaddle.height / 2 - (ball.y + ball.radius)), 
+				bottom: Math.abs(ball.y - ball.radius - (currentPaddle.y + currentPaddle.height / 2)), 
 			};
 
 			let currentMin = Infinity; 
 			let side = null; 
 
-			ball.xSpeed = -(smallPlatform.x - ball.x) / smallPlatform.width / 2 * 25;
+			ball.xSpeed = -(currentPaddle.x - ball.x) / currentPaddle.width / 2 * 25;
 			ball.ySpeed = -ball.ySpeed;
 
 		}
@@ -176,6 +187,7 @@ import { clamp } from './clamp.js';
 			}
 
 			if (rectCircleCollide(element, ball)) {
+				console.log(element.randomNum)
 
 				const sidesDistances = { 
 					left: Math.abs(element.x - element.width / 2 - (ball.x + ball.radius)), 
@@ -214,21 +226,49 @@ import { clamp } from './clamp.js';
 				}else if (element.type === 1) {
 					score += 30;
 				}else if (element.type === 0) {
-						score += 40;
+					score += 40;
 				}
-				greyBonus.x = element.x;
-				greyBonus.y = element.y;
+
+				switch (element.randomNum) {
+					case 1:
+					case 2: 
+					case 3:
+						expandBonus.x = element.x;
+						expandBonus.y = element.y;
+						app.stage.addChild(expandBonus);
+						break;
+					case 4:
+					case 5:
+					case 6:
+						console.log(element.type)
+						narrowBonus.x = element.x;
+						narrowBonus.y = element.y;
+						app.stage.addChild(narrowBonus);
+						break;
+					case 7:
+					case 8:
+					case 9:
+						console.log(element.type)
+						splitBonus.x = element.x;
+						splitBonus.y = element.y;
+						app.stage.addChild(splitBonus);
+						break;
+					default:
+						break;
+				}
+
 				element.x = null;
 				element.y = null;
-				
 				scoreCount.text = score;
-				
 				app.stage.removeChild(element);
-				app.stage.addChild(greyBonus);
+	
 				break;
 			}
 		}
-			
+		expandBonus.fall();
+		narrowBonus.fall();
+		splitBonus.fall();
+
 		// Collision detection for left, right walls and top.
 		if (ball.x+ball.radius >= app.screen.width-25) {
 			ball.x = app.screen.width-25-ball.radius;
@@ -244,16 +284,27 @@ import { clamp } from './clamp.js';
 			// ball.ySpeed = -ball.ySpeed;
 			ticker.stop();
 		}
-		greyBonus.fall();
 
-		if (rectToRectCollide(currentPlatform, greyBonus)) {
-			
+
+		if (rectToRectCollide(currentPlatform, expandBonus)) {
 			currentPlatform.texture = gameTextures.largePlatformTexture;
 			clampMin = 90;
 			clampMax = 560;
-			app.stage.removeChild(greyBonus)
+			app.stage.removeChild(expandBonus);
 			
+		}else if (rectToRectCollide(currentPlatform, narrowBonus)) {
+			currentPlatform.texture = gameTextures.smallPlatformTexture;
+			clampMin = 60;
+			clampMax = 590;
+			app.stage.removeChild(narrowBonus);
+		}else if (rectToRectCollide(currentPlatform, splitBonus)) {
+			for (let i = 0; i < 3; i++) {
+				ballsArray.push(new Ball(gameTextures.ironBallTexture, ball.x, ball.y, 3, 5));
+				
+			}
+			app.stage.removeChild(splitBonus);
 		}
+		
 
 	});
 	

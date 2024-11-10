@@ -9,6 +9,8 @@ export const gameTextures = {
     redBlockTexture : await Assets.load('assets/red.png'),
     orangeBlockTexture : await Assets.load('assets/orange.png'),
     yellowBlockTexture : await Assets.load('assets/yellow.png'),
-    greyBonusTexture : await Assets.load('assets/bonus.png'),
-    largePlatformTexture : await Assets.load('assets/large_platform.png')
+    largePlatformTexture : await Assets.load('assets/large_platform.png'),
+    expandBonusTexture : await Assets.load('assets/expand.png'),
+    narrowBonusTexture : await Assets.load('assets/narrow.png'),
+    splitBonusTexture : await Assets.load('assets/split.png')
 };

@@ -17,6 +17,5 @@ export class Ball extends Sprite {
     move(ticker) {
         this.x += this.xSpeed * ticker.deltaTime ;
         this.y += this.ySpeed * ticker.deltaTime ;
-        // console.log(this.x)
     }
 }
