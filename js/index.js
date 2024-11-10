@@ -25,7 +25,7 @@ import { Bonus } from './bonus.js';
 	const currentPaddle = new Sprite(gameTextures.smallPlatformTexture);
 	const expandBonus = new Bonus(gameTextures.expandBonusTexture);
 	const narrowBonus = new Bonus(gameTextures.narrowBonusTexture);
-	const splitBonus = new Bonus(gameTextures.smallPlatformTexture);
+	const splitBonus = new Bonus(gameTextures.splitBonusTexture);
 	const ticker = new Ticker();
 	const graphics = new Graphics();
 	const scoreStyle = new TextStyle({
