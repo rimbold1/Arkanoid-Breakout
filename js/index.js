@@ -161,6 +161,7 @@ import { Bonus } from './bonus.js';
 				if (ballsArray.length < 1) {
 					ticker.stop();
 				}
+				app.stage.addChild(ballElement);
 				ballElement.move(ticker);
 				if (rectCircleCollide(currentPaddle, ballElement)) { 
 					const sidesDistances = { 
@@ -187,8 +188,7 @@ import { Bonus } from './bonus.js';
 					}
 		
 					if (rectCircleCollide(element, ballElement)) {
-						console.log(element.randomNum)
-		
+
 						const sidesDistances = { 
 							left: Math.abs(element.x - element.width / 2 - (ballElement.x + ballElement.radius)), 
 							right: Math.abs(ballElement.x - ballElement.radius - (element.x + element.width / 2)), 
@@ -230,22 +230,28 @@ import { Bonus } from './bonus.js';
 						}
 		
 						switch (element.randomNum) {
-							case 1:
+							// case 1:
 							// case 2: 
-							case 3:
-								expandBonus.x = element.x;
-								expandBonus.y = element.y;
-								app.stage.addChild(expandBonus);
-								break;
-							case 4:
+							// case 3:
+							// 	expandBonus.x = element.x;
+							// 	expandBonus.y = element.y;
+							// 	app.stage.addChild(expandBonus);
+							// 	break;
+							// case 4:
 							// case 5:
-							case 6:
-								narrowBonus.x = element.x;
-								narrowBonus.y = element.y;
-								app.stage.addChild(narrowBonus);
-								break;
+							// case 6:
+							// 	narrowBonus.x = element.x;
+							// 	narrowBonus.y = element.y;
+							// 	app.stage.addChild(narrowBonus);
+							// 	break;
+								case 1:
+									case 2: 
+									case 3:
+								case 4:
+									case 5:
+									case 6:
 							case 7:
-							// case 8:
+							case 8:
 							case 9:
 								splitBonus.x = element.x;
 								splitBonus.y = element.y;
@@ -296,17 +302,9 @@ import { Bonus } from './bonus.js';
 					clampMax = 590;
 					app.stage.removeChild(narrowBonus);
 				}else if (rectToRectCollide(currentPlatform, splitBonus)) {
-					for (let i = 0; i < 3; i++) {
-						ballsArray.push(new Ball(gameTextures.ironBallTexture, ball.x, ball.y, 3, 5));
-						for (let j = 0; j < ballsArray.length; j++) {
-							const element = ballsArray[j];
-							app.stage.addChild(element);
-							
-						}
-						break;
-					}
-					app.stage.removeChild(splitBonus);
+					ballsArray.push(new Ball(gameTextures.ironBallTexture, ball.x, ball.y, -3, -4));
 				}
+				
 			}
 		}
 
