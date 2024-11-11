@@ -93,18 +93,22 @@ import { Bonus } from './bonus.js';
 			
 			for (let j = 0; j < element.length; j++) {
 				const item = element[j];
+				const brick = app.stage.addChild(new Sprite(textures[item]));
 				if (item === '') {
+					brick.randomNum = null;
 					xPos += 60;
 					continue;
+				}else {
+					brick.randomNum = Math.floor(Math.random()*16);
+					brick.type = item;
+					brick.anchor.set(0.5);
+					brick.x = xPos;
+					brick.y = yPos;
+					brickArray.push(brick);
+					xPos += 60;
 				}
-				const brick = app.stage.addChild(new Sprite(textures[item]));
-				brick.randomNum = Math.floor(Math.random()*16);
-				brick.type = item;
-				brick.anchor.set(0.5);
-				brick.x = xPos;
-				brick.y = yPos;
-				brickArray.push(brick);
-				xPos += 60;
+				
+				
 			}
 			yPos += 30;
 			xPos = 115;
@@ -260,13 +264,17 @@ import { Bonus } from './bonus.js';
 							default:
 								break;
 						}
+						if (element.type === 4) {
+							continue;
+						}else {
+							element.x = null;
+							element.y = null;
+							scoreCount.text = score;
+							app.stage.removeChild(element);
+							// break;
+						}
 		
-						element.x = null;
-						element.y = null;
-						scoreCount.text = score;
-						app.stage.removeChild(element);
-			
-						break;
+						
 					}
 				}
 				expandBonus.fall();
