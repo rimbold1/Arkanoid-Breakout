@@ -4,6 +4,7 @@ export const gameTextures = {
     ironBallTexture : await Assets.load('assets/iron_ball.png'),
     fieldTexture : await Assets.load('assets/Blue_Field.png'),
     smallPlatformTexture : await Assets.load('assets/small_platform.png'),
+    armoredBlockTexture : await Assets.load('assets/armored.png'),
     blueBlockTexture : await Assets.load('assets/blue.png'),
     greenBlockTexture : await Assets.load('assets/green.png'),
     redBlockTexture : await Assets.load('assets/red.png'),

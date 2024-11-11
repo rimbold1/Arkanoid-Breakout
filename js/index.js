@@ -63,18 +63,21 @@ import { Bonus } from './bonus.js';
 
 	const brickArray = [];
 	const map = [
+		[4,'','','','','','',4],
 		[3, 3, 3, 3, 3, 3, 3, 3],
 		[0, 0, 0, 0, 0, 0, 0, 0],
 		[1, 1, 1, 1, 1, 1, 1, 1],
 		[2, 2, 2, 2, 2, 2, 2, 2],
-		[3, 3, 3, 3, 3, 3, 3, 3]
+		[3, 3, 3, 3, 3, 3, 3, 3],
+		[4, 4,'','','','', 4, 4]
 	];
 	
 	const textures = {
 		0: gameTextures.redBlockTexture, // Червоний
 		1: gameTextures.orangeBlockTexture, // Помаранчевий
 		2: gameTextures.yellowBlockTexture, // Жовтий
-		3: gameTextures.blueBlockTexture //Голуби
+		3: gameTextures.blueBlockTexture, //Голубий
+		4: gameTextures.armoredBlockTexture // Сірий (бронь)
 	};
 
 	scoreCount.x = app.screen.width/2;
@@ -90,7 +93,10 @@ import { Bonus } from './bonus.js';
 			
 			for (let j = 0; j < element.length; j++) {
 				const item = element[j];
-				
+				if (item === '') {
+					xPos += 60;
+					continue;
+				}
 				const brick = app.stage.addChild(new Sprite(textures[item]));
 				brick.randomNum = Math.floor(Math.random()*16);
 				brick.type = item;
@@ -107,11 +113,6 @@ import { Bonus } from './bonus.js';
 
 	addBricks(map, textures);
 
-	// expandBonus.anchor.set(0.5);
-	// expandBonus.fall = function() {
-	// 	this.y += bonusVelocity;
-	// }
-
 	// adding object to the stage
 	app.stage.addChild(background);
 	app.stage.addChild(ball);
@@ -120,7 +121,6 @@ import { Bonus } from './bonus.js';
 		app.stage.addChild(block);
 	});
 	app.stage.addChild(scoreCount); // Adding score counter.
-
 
 	// Moving platform events
 	let isDown = true;
@@ -302,7 +302,7 @@ import { Bonus } from './bonus.js';
 					clampMax = 590;
 					app.stage.removeChild(narrowBonus);
 				}else if (rectToRectCollide(currentPlatform, splitBonus)) {
-					ballsArray.push(new Ball(gameTextures.ironBallTexture, ball.x, ball.y, -3, -4));
+					// ballsArray.push(new Ball(gameTextures.ironBallTexture, ball.x, ball.y, -3, -4));
 				}
 				
 			}
