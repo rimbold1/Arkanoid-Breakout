@@ -98,6 +98,14 @@ import { Bonus } from './bonus.js';
 					brick.randomNum = null;
 					xPos += 60;
 					continue;
+				}else if (item === 4) {
+					brick.randomNum = null;
+					brick.type = item;
+					brick.anchor.set(0.5);
+					brick.x = xPos;
+					brick.y = yPos;
+					brickArray.push(brick);
+					xPos += 60;
 				}else {
 					brick.randomNum = Math.floor(Math.random()*16);
 					brick.type = item;
@@ -106,9 +114,7 @@ import { Bonus } from './bonus.js';
 					brick.y = yPos;
 					brickArray.push(brick);
 					xPos += 60;
-				}
-				
-				
+				}	
 			}
 			yPos += 30;
 			xPos = 115;
