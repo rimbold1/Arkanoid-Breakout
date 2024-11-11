@@ -240,28 +240,19 @@ import { Bonus } from './bonus.js';
 						}
 		
 						switch (element.randomNum) {
-							// case 1:
-							// case 2: 
-							// case 3:
-							// 	expandBonus.x = element.x;
-							// 	expandBonus.y = element.y;
-							// 	app.stage.addChild(expandBonus);
-							// 	break;
-							// case 4:
-							// case 5:
-							// case 6:
-							// 	narrowBonus.x = element.x;
-							// 	narrowBonus.y = element.y;
-							// 	app.stage.addChild(narrowBonus);
-							// 	break;
-								case 1:
-									case 2: 
-									case 3:
-								case 4:
-									case 5:
-									case 6:
+							case 1:
+							case 3:
+								expandBonus.x = element.x;
+								expandBonus.y = element.y;
+								app.stage.addChild(expandBonus);
+								break;
+							case 4:
+							case 6:
+								narrowBonus.x = element.x;
+								narrowBonus.y = element.y;
+								app.stage.addChild(narrowBonus);
+								break;
 							case 7:
-							case 8:
 							case 9:
 								splitBonus.x = element.x;
 								splitBonus.y = element.y;
