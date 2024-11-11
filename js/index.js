@@ -157,153 +157,160 @@ import { Bonus } from './bonus.js';
 		
 		if (movementReady === true) {
 			for (let i = 0; i < ballsArray.length; i++) {
-				const element = ballsArray[i];
-				element.move(ticker);
-			}
-		}
-
-		if (rectCircleCollide(currentPaddle, ball)) { 
-			const sidesDistances = { 
-				left: Math.abs(currentPaddle.x - currentPaddle.width / 2 - (ball.x + ball.radius)), 
-				right: Math.abs(ball.x - ball.radius - (currentPaddle.x + currentPaddle.width / 2)), 
-				top: Math.abs(currentPaddle.y - currentPaddle.height / 2 - (ball.y + ball.radius)), 
-				bottom: Math.abs(ball.y - ball.radius - (currentPaddle.y + currentPaddle.height / 2)), 
-			};
-
-			let currentMin = Infinity; 
-			let side = null; 
-
-			ball.xSpeed = -(currentPaddle.x - ball.x) / currentPaddle.width / 2 * 25;
-			ball.ySpeed = -ball.ySpeed;
-
-		}
-
-		for (let i = 0; i < brickArray.length; i++) {
-
-			const element = brickArray[i];
-			// Перевірка на наявність блоків, якщо  немає то стоп-гра.
-			if (brickArray.every(element => element.x === null && element.y === null )) { 
-				ticker.stop();
-			}
-
-			if (rectCircleCollide(element, ball)) {
-				console.log(element.randomNum)
-
-				const sidesDistances = { 
-					left: Math.abs(element.x - element.width / 2 - (ball.x + ball.radius)), 
-					right: Math.abs(ball.x - ball.radius - (element.x + element.width / 2)), 
-					top: Math.abs(element.y - element.height / 2 - (ball.y + ball.radius)), 
-					bottom: Math.abs(ball.y - ball.radius - (element.y + element.height / 2)), 
-				}; 
-					
-				let currentMin = Infinity; 
-				let side = null; 
-					
-				for (const key in sidesDistances) { 
-					if (sidesDistances[key] < currentMin) { 
-					currentMin = sidesDistances[key]; 
-					side = key; 
-					} 
-				} 
-				if (side === 'top') { 
-					ball.y = element.y - element.height / 2 - ball.radius ;
-					ball.ySpeed = -ball.ySpeed;
-				}else if (side === 'bottom') {
-					ball.y =  element.y + element.height/2 + ball.radius;
-					ball.ySpeed = -ball.ySpeed;
-				}else if (side === 'right') {
-					ball.x = element.x + element.width/2 + ball.radius;
-					ball.xSpeed = -ball.xSpeed;
-				}else if (side === 'left') {
-					ball.x = element.x - element.width/2 - ball.radius;
-					ball.xSpeed = -ball.xSpeed;
+				const ballElement = ballsArray[i];
+				if (ballsArray.length < 1) {
+					ticker.stop();
 				}
-				
-				if (element.type === 3) {
-					score += 10;
-				}else if (element.type === 2) {
-					score += 20;
-				}else if (element.type === 1) {
-					score += 30;
-				}else if (element.type === 0) {
-					score += 40;
+				ballElement.move(ticker);
+				if (rectCircleCollide(currentPaddle, ballElement)) { 
+					const sidesDistances = { 
+						left: Math.abs(currentPaddle.x - currentPaddle.width / 2 - (ballElement.x + ballElement.radius)), 
+						right: Math.abs(ballElement.x - ballElement.radius - (currentPaddle.x + currentPaddle.width / 2)), 
+						top: Math.abs(currentPaddle.y - currentPaddle.height / 2 - (ballElement.y + ballElement.radius)), 
+						bottom: Math.abs(ballElement.y - ballElement.radius - (currentPaddle.y + currentPaddle.height / 2)), 
+					};
+		
+					let currentMin = Infinity; 
+					let side = null; 
+		
+					ballElement.xSpeed = -(currentPaddle.x - ballElement.x) / currentPaddle.width / 2 * 25;
+					ballElement.ySpeed = -ballElement.ySpeed;
+		
 				}
-
-				switch (element.randomNum) {
-					case 1:
-					case 2: 
-					case 3:
-						expandBonus.x = element.x;
-						expandBonus.y = element.y;
-						app.stage.addChild(expandBonus);
-						break;
-					case 4:
-					case 5:
-					case 6:
-						console.log(element.type)
-						narrowBonus.x = element.x;
-						narrowBonus.y = element.y;
-						app.stage.addChild(narrowBonus);
-						break;
-					case 7:
-					case 8:
-					case 9:
-						console.log(element.type)
-						splitBonus.x = element.x;
-						splitBonus.y = element.y;
-						app.stage.addChild(splitBonus);
-						break;
-					default:
-						break;
-				}
-
-				element.x = null;
-				element.y = null;
-				scoreCount.text = score;
-				app.stage.removeChild(element);
-	
-				break;
-			}
-		}
-		expandBonus.fall();
-		narrowBonus.fall();
-		splitBonus.fall();
-
-		// Collision detection for left, right walls and top.
-		if (ball.x+ball.radius >= app.screen.width-25) {
-			ball.x = app.screen.width-25-ball.radius;
-			ball.xSpeed = -ball.xSpeed;
-		}else if (ball.x-ball.radius <= 25) {
-			ball.x = 25+ball.radius;
-			ball.xSpeed = -ball.xSpeed;
-		}else if (ball.y-ball.radius <= 25) {
-			ball.y = 25+ball.radius;
-			ball.ySpeed = -ball.ySpeed;
-		}else if (ball.y+ball.radius > app.screen.height) {
-			// ball.y = app.screen.height-ball.radius;
-			// ball.ySpeed = -ball.ySpeed;
-			ticker.stop();
-		}
-
-
-		if (rectToRectCollide(currentPlatform, expandBonus)) {
-			currentPlatform.texture = gameTextures.largePlatformTexture;
-			clampMin = 90;
-			clampMax = 560;
-			app.stage.removeChild(expandBonus);
+		
+				for (let i = 0; i < brickArray.length; i++) {
+		
+					const element = brickArray[i];
+					// Перевірка на наявність блоків, якщо  немає то стоп-гра.
+					if (brickArray.every(element => element.x === null && element.y === null )) { 
+						ticker.stop();
+					}
+		
+					if (rectCircleCollide(element, ballElement)) {
+						console.log(element.randomNum)
+		
+						const sidesDistances = { 
+							left: Math.abs(element.x - element.width / 2 - (ballElement.x + ballElement.radius)), 
+							right: Math.abs(ballElement.x - ballElement.radius - (element.x + element.width / 2)), 
+							top: Math.abs(element.y - element.height / 2 - (ballElement.y + ballElement.radius)), 
+							bottom: Math.abs(ballElement.y - ballElement.radius - (element.y + element.height / 2)), 
+						}; 
+							
+						let currentMin = Infinity; 
+						let side = null; 
+							
+						for (const key in sidesDistances) { 
+							if (sidesDistances[key] < currentMin) { 
+							currentMin = sidesDistances[key]; 
+							side = key; 
+							} 
+						} 
+						if (side === 'top') { 
+							ballElement.y = element.y - element.height / 2 - ballElement.radius ;
+							ballElement.ySpeed = -ballElement.ySpeed;
+						}else if (side === 'bottom') {
+							ballElement.y =  element.y + element.height/2 + ballElement.radius;
+							ballElement.ySpeed = -ballElement.ySpeed;
+						}else if (side === 'right') {
+							ballElement.x = element.x + element.width/2 + ballElement.radius;
+							ballElement.xSpeed = -ballElement.xSpeed;
+						}else if (side === 'left') {
+							ballElement.x = element.x - element.width/2 - ballElement.radius;
+							ballElement.xSpeed = -ballElement.xSpeed;
+						}
+						
+						if (element.type === 3) {
+							score += 10;
+						}else if (element.type === 2) {
+							score += 20;
+						}else if (element.type === 1) {
+							score += 30;
+						}else if (element.type === 0) {
+							score += 40;
+						}
+		
+						switch (element.randomNum) {
+							case 1:
+							// case 2: 
+							case 3:
+								expandBonus.x = element.x;
+								expandBonus.y = element.y;
+								app.stage.addChild(expandBonus);
+								break;
+							case 4:
+							// case 5:
+							case 6:
+								narrowBonus.x = element.x;
+								narrowBonus.y = element.y;
+								app.stage.addChild(narrowBonus);
+								break;
+							case 7:
+							// case 8:
+							case 9:
+								splitBonus.x = element.x;
+								splitBonus.y = element.y;
+								app.stage.addChild(splitBonus);
+								break;
+							default:
+								break;
+						}
+		
+						element.x = null;
+						element.y = null;
+						scoreCount.text = score;
+						app.stage.removeChild(element);
 			
-		}else if (rectToRectCollide(currentPlatform, narrowBonus)) {
-			currentPlatform.texture = gameTextures.smallPlatformTexture;
-			clampMin = 60;
-			clampMax = 590;
-			app.stage.removeChild(narrowBonus);
-		}else if (rectToRectCollide(currentPlatform, splitBonus)) {
-			for (let i = 0; i < 3; i++) {
-				ballsArray.push(new Ball(gameTextures.ironBallTexture, ball.x, ball.y, 3, 5));
-				
+						break;
+					}
+				}
+				expandBonus.fall();
+				narrowBonus.fall();
+				splitBonus.fall();
+		
+				// Collision detection for left, right walls and top.
+				if (ballElement.x+ballElement.radius >= app.screen.width-25) {
+					ballElement.x = app.screen.width-25-ballElement.radius;
+					ballElement.xSpeed = -ballElement.xSpeed;
+				}else if (ballElement.x-ballElement.radius <= 25) {
+					ballElement.x = 25+ballElement.radius;
+					ballElement.xSpeed = -ballElement.xSpeed;
+				}else if (ballElement.y-ballElement.radius <= 25) {
+					ballElement.y = 25+ballElement.radius;
+					ballElement.ySpeed = -ballElement.ySpeed;
+				}else if (ballElement.y+ballElement.radius > app.screen.height) {
+					// ball.y = app.screen.height-ball.radius;
+					// ball.ySpeed = -ball.ySpeed;
+					ticker.stop();
+				}
+		
+		
+				if (rectToRectCollide(currentPlatform, expandBonus)) {
+					currentPlatform.texture = gameTextures.largePlatformTexture;
+					clampMin = 90;
+					clampMax = 560;
+					app.stage.removeChild(expandBonus);
+					
+				}else if (rectToRectCollide(currentPlatform, narrowBonus)) {
+					currentPlatform.texture = gameTextures.smallPlatformTexture;
+					clampMin = 60;
+					clampMax = 590;
+					app.stage.removeChild(narrowBonus);
+				}else if (rectToRectCollide(currentPlatform, splitBonus)) {
+					for (let i = 0; i < 3; i++) {
+						ballsArray.push(new Ball(gameTextures.ironBallTexture, ball.x, ball.y, 3, 5));
+						for (let j = 0; j < ballsArray.length; j++) {
+							const element = ballsArray[j];
+							app.stage.addChild(element);
+							
+						}
+						break;
+					}
+					app.stage.removeChild(splitBonus);
+				}
 			}
-			app.stage.removeChild(splitBonus);
 		}
+
+		
 		
 
 	});
