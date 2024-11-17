@@ -4,6 +4,7 @@ import { Ball } from './ball.js';
 import { rectCircleCollide, rectToRectCollide } from './collisionDetectionFunc.js';
 import { clamp } from './clamp.js';
 import { Bonus } from './bonus.js';
+import { Brick } from './brick.js';
 
 // Asynchronous IIFE
 (async () => {
@@ -93,23 +94,20 @@ import { Bonus } from './bonus.js';
 			
 			for (let j = 0; j < element.length; j++) {
 				const item = element[j];
-				const brick = app.stage.addChild(new Sprite(textures[item]));
+				const brick = app.stage.addChild(new Brick(textures[item]));
 				if (item === '') {
-					brick.randomNum = null;
+					brick.num = null;
 					xPos += 60;
 					continue;
 				}else if (item === 4) {
-					brick.randomNum = null;
+					brick.num = null;
 					brick.type = item;
-					brick.anchor.set(0.5);
 					brick.x = xPos;
 					brick.y = yPos;
 					brickArray.push(brick);
 					xPos += 60;
 				}else {
-					brick.randomNum = Math.floor(Math.random()*16);
 					brick.type = item;
-					brick.anchor.set(0.5);
 					brick.x = xPos;
 					brick.y = yPos;
 					brickArray.push(brick);
