@@ -101,13 +101,13 @@ import { Brick } from './brick.js';
 					continue;
 				}else if (item === 4) {
 					brick.num = null;
-					brick.type = item;
+					brick.typeID = item;
 					brick.x = xPos;
 					brick.y = yPos;
 					brickArray.push(brick);
 					xPos += 60;
 				}else {
-					brick.type = item;
+					brick.typeID = item;
 					brick.x = xPos;
 					brick.y = yPos;
 					brickArray.push(brick);
@@ -196,7 +196,7 @@ import { Brick } from './brick.js';
 					}
 		
 					if (rectCircleCollide(brick, ballElement)) {
-
+						console.log(brick.typeID)
 						const sidesDistances = { 
 							left: Math.abs(brick.x - brick.width / 2 - (ballElement.x + ballElement.radius)), 
 							right: Math.abs(ballElement.x - ballElement.radius - (brick.x + brick.width / 2)), 
@@ -227,17 +227,17 @@ import { Brick } from './brick.js';
 							ballElement.xSpeed = -ballElement.xSpeed;
 						}
 						
-						if (brick.type === 3) {
+						if (brick.typeID === 3) {
 							score += 10;
-						}else if (brick.type === 2) {
+						}else if (brick.typeID === 2) {
 							score += 20;
-						}else if (brick.type === 1) {
+						}else if (brick.typeID === 1) {
 							score += 30;
-						}else if (brick.type === 0) {
+						}else if (brick.typeID === 0) {
 							score += 40;
 						}
 		
-						switch (brick.randomNum) {
+						switch (brick.num) {
 							case 1:
 							case 3:
 								expandBonus.x = brick.x;
@@ -259,7 +259,7 @@ import { Brick } from './brick.js';
 							default:
 								break;
 						}
-						if (brick.type === 4) {
+						if (brick.typeID === 4) {
 							continue;
 						}else {
 							brick.x = null;
