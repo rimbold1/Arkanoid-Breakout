@@ -63,7 +63,7 @@ import { Brick } from './brick.js';
 	ball.y = currentPlatform.y-20;
 
 	const brickArray = [];
-	const map = [
+	const levelMap = [
 		[4,'','','','','','',4],
 		[3, 3, 3, 3, 3, 3, 3, 3],
 		[0, 0, 0, 0, 0, 0, 0, 0],
@@ -73,7 +73,7 @@ import { Brick } from './brick.js';
 		[4, 4,'','','','', 4, 4]
 	];
 	
-	const textures = {
+	const brickTextures = {
 		0: gameTextures.redBlockTexture, // Червоний
 		1: gameTextures.orangeBlockTexture, // Помаранчевий
 		2: gameTextures.yellowBlockTexture, // Жовтий
@@ -86,15 +86,15 @@ import { Brick } from './brick.js';
 	scoreCount.y = 35;
 	app.stage.addChild(scoreCount);
 
-	function addBricks(map, textures) { // Building level by adding bricks to the game
+	function addBricks(levelMap, brickTextures) { // Building level by adding bricks to the game
 		let xPos = 115;
 		let yPos = 200;
-		for (let i = 0; i < map.length; i++) {
-			const element = map[i];
+		for (let i = 0; i < levelMap.length; i++) {
+			const row = levelMap[i];
 			
-			for (let j = 0; j < element.length; j++) {
-				const item = element[j];
-				const brick = app.stage.addChild(new Brick(textures[item]));
+			for (let j = 0; j < row.length; j++) {
+				const item = row[j];
+				const brick = app.stage.addChild(new Brick(brickTextures[item]));
 				if (item === '') {
 					brick.num = null;
 					xPos += 60;
@@ -119,14 +119,14 @@ import { Brick } from './brick.js';
 		}
 	};
 
-	addBricks(map, textures);
+	addBricks(levelMap, brickTextures);
 
 	// adding object to the stage
 	app.stage.addChild(background);
 	app.stage.addChild(ball);
 	app.stage.addChild(currentPaddle);
-	brickArray.forEach((block) => { // Adding blocks to the game stage.
-		app.stage.addChild(block);
+	brickArray.forEach((brick) => { // Adding bricks to the game stage.
+		app.stage.addChild(brick);
 	});
 	app.stage.addChild(scoreCount); // Adding score counter.
 
@@ -163,7 +163,7 @@ import { Brick } from './brick.js';
 	
 	ticker.add((ticker) => {
 		
-		if (movementReady === true) {
+		if (movementReady) {
 			for (let i = 0; i < ballsArray.length; i++) {
 				const ballElement = ballsArray[i];
 				if (ballsArray.length < 1) {
@@ -189,19 +189,19 @@ import { Brick } from './brick.js';
 		
 				for (let i = 0; i < brickArray.length; i++) {
 		
-					const element = brickArray[i];
+					const brick = brickArray[i];
 					// Перевірка на наявність блоків, якщо  немає то стоп-гра.
-					if (brickArray.every(element => element.x === null && element.y === null )) { 
+					if (brickArray.every(brick => brick.x === null && brick.y === null )) { 
 						ticker.stop();
 					}
 		
-					if (rectCircleCollide(element, ballElement)) {
+					if (rectCircleCollide(brick, ballElement)) {
 
 						const sidesDistances = { 
-							left: Math.abs(element.x - element.width / 2 - (ballElement.x + ballElement.radius)), 
-							right: Math.abs(ballElement.x - ballElement.radius - (element.x + element.width / 2)), 
-							top: Math.abs(element.y - element.height / 2 - (ballElement.y + ballElement.radius)), 
-							bottom: Math.abs(ballElement.y - ballElement.radius - (element.y + element.height / 2)), 
+							left: Math.abs(brick.x - brick.width / 2 - (ballElement.x + ballElement.radius)), 
+							right: Math.abs(ballElement.x - ballElement.radius - (brick.x + brick.width / 2)), 
+							top: Math.abs(brick.y - brick.height / 2 - (ballElement.y + ballElement.radius)), 
+							bottom: Math.abs(ballElement.y - ballElement.radius - (brick.y + brick.height / 2)), 
 						}; 
 							
 						let currentMin = Infinity; 
@@ -214,58 +214,58 @@ import { Brick } from './brick.js';
 							} 
 						} 
 						if (side === 'top') { 
-							ballElement.y = element.y - element.height / 2 - ballElement.radius ;
+							ballElement.y = brick.y - brick.height / 2 - ballElement.radius ;
 							ballElement.ySpeed = -ballElement.ySpeed;
 						}else if (side === 'bottom') {
-							ballElement.y =  element.y + element.height/2 + ballElement.radius;
+							ballElement.y =  brick.y + brick.height/2 + ballElement.radius;
 							ballElement.ySpeed = -ballElement.ySpeed;
 						}else if (side === 'right') {
-							ballElement.x = element.x + element.width/2 + ballElement.radius;
+							ballElement.x = brick.x + brick.width/2 + ballElement.radius;
 							ballElement.xSpeed = -ballElement.xSpeed;
 						}else if (side === 'left') {
-							ballElement.x = element.x - element.width/2 - ballElement.radius;
+							ballElement.x = brick.x - brick.width/2 - ballElement.radius;
 							ballElement.xSpeed = -ballElement.xSpeed;
 						}
 						
-						if (element.type === 3) {
+						if (brick.type === 3) {
 							score += 10;
-						}else if (element.type === 2) {
+						}else if (brick.type === 2) {
 							score += 20;
-						}else if (element.type === 1) {
+						}else if (brick.type === 1) {
 							score += 30;
-						}else if (element.type === 0) {
+						}else if (brick.type === 0) {
 							score += 40;
 						}
 		
-						switch (element.randomNum) {
+						switch (brick.randomNum) {
 							case 1:
 							case 3:
-								expandBonus.x = element.x;
-								expandBonus.y = element.y;
+								expandBonus.x = brick.x;
+								expandBonus.y = brick.y;
 								app.stage.addChild(expandBonus);
 								break;
 							case 4:
 							case 6:
-								narrowBonus.x = element.x;
-								narrowBonus.y = element.y;
+								narrowBonus.x = brick.x;
+								narrowBonus.y = brick.y;
 								app.stage.addChild(narrowBonus);
 								break;
 							case 7:
 							case 9:
-								splitBonus.x = element.x;
-								splitBonus.y = element.y;
+								splitBonus.x = brick.x;
+								splitBonus.y = brick.y;
 								app.stage.addChild(splitBonus);
 								break;
 							default:
 								break;
 						}
-						if (element.type === 4) {
+						if (brick.type === 4) {
 							continue;
 						}else {
-							element.x = null;
-							element.y = null;
+							brick.x = null;
+							brick.y = null;
 							scoreCount.text = score;
-							app.stage.removeChild(element);
+							app.stage.removeChild(brick);
 							// break;
 						}
 		
