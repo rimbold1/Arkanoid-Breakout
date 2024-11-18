@@ -93,26 +93,23 @@ import { Brick } from './brick.js';
 			const row = levelMap[i];
 			
 			for (let j = 0; j < row.length; j++) {
-				const item = row[j];
-				const brick = app.stage.addChild(new Brick(brickTextures[item]));
-				if (item === '') {
+				const rowItem = row[j];
+				const brick = app.stage.addChild(new Brick(brickTextures[rowItem], rowItem));
+				if (rowItem === '') {
 					brick.num = null;
 					xPos += 60;
 					continue;
-				}else if (item === 4) {
+				}else if (rowItem === 4) {
 					brick.num = null;
-					brick.typeID = item;
 					brick.x = xPos;
 					brick.y = yPos;
 					brickArray.push(brick);
-					xPos += 60;
 				}else {
-					brick.typeID = item;
 					brick.x = xPos;
 					brick.y = yPos;
 					brickArray.push(brick);
-					xPos += 60;
-				}	
+				}
+				xPos += 60;
 			}
 			yPos += 30;
 			xPos = 115;
@@ -196,7 +193,7 @@ import { Brick } from './brick.js';
 					}
 		
 					if (rectCircleCollide(brick, ballElement)) {
-						console.log(brick.typeID)
+
 						const sidesDistances = { 
 							left: Math.abs(brick.x - brick.width / 2 - (ballElement.x + ballElement.radius)), 
 							right: Math.abs(ballElement.x - ballElement.radius - (brick.x + brick.width / 2)), 
