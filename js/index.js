@@ -233,22 +233,32 @@ import { Brick } from './brick.js';
 						}else if (brick.typeID === 0) {
 							score += 40;
 						}
-		
+
 						switch (brick.num) {
 							case 1:
 							case 3:
+								if (expandBonus.isActive) {
+									break;
+								}
 								expandBonus.x = brick.x;
 								expandBonus.y = brick.y;
 								app.stage.addChild(expandBonus);
+								expandBonus.isActive = true;
 								break;
 							case 4:
 							case 6:
+								if (narrowBonus.isActive) {
+									break;
+								}
 								narrowBonus.x = brick.x;
 								narrowBonus.y = brick.y;
 								app.stage.addChild(narrowBonus);
 								break;
 							case 7:
 							case 9:
+								if (splitBonus.isActive) {
+									break;
+								}
 								splitBonus.x = brick.x;
 								splitBonus.y = brick.y;
 								app.stage.addChild(splitBonus);
@@ -295,22 +305,21 @@ import { Brick } from './brick.js';
 					clampMin = 90;
 					clampMax = 560;
 					app.stage.removeChild(expandBonus);
-					
+					expandBonus.isActive = false;
 				}else if (rectToRectCollide(currentPlatform, narrowBonus)) {
 					currentPlatform.texture = gameTextures.smallPlatformTexture;
 					clampMin = 60;
 					clampMax = 590;
 					app.stage.removeChild(narrowBonus);
+					narrowBonus.isActive = false;
 				}else if (rectToRectCollide(currentPlatform, splitBonus)) {
-					// ballsArray.push(new Ball(gameTextures.ironBallTexture, ball.x, ball.y, -3, -4));
+					ballsArray.push(new Ball(gameTextures.ironBallTexture, ball.x, ball.y, -3, -4));
+					app.stage.removeChild(splitBonus);
+					splitBonus.isActive = false;
 				}
 				
 			}
 		}
-
-		
-		
-
 	});
 	
 	ticker.start();
