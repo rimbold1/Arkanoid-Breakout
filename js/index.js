@@ -1,7 +1,7 @@
 import { Application, Assets, Sprite, Ticker, Graphics, Text, TextStyle } from 'pixi.js';
 import { gameTextures } from './texturesPaths.js';
 import { Ball } from './ball.js';
-import { rectCircleCollide, rectToRectCollide } from './collisionDetectionFunc.js';
+import { rectCircleCollide, rectToRectCollide, collisonDetectionForWalls } from './CollisionDetectionFunc.js';
 import { clamp } from './clamp.js';
 import { Bonus } from './bonus.js';
 import { Brick } from './brick.js';
@@ -9,6 +9,7 @@ import { Brick } from './brick.js';
 // Asynchronous IIFE
 (async () => {
 	const app = new Application();
+	window.app = app;
 
 	await app.init({ 
 		background: '#b0d3f1',
@@ -24,9 +25,6 @@ import { Brick } from './brick.js';
 	const background = new Sprite(gameTextures.fieldTexture);
 	const ball = new Ball(gameTextures.ironBallTexture, app.screen/2, app.screen/2, 0, -7);
 	const currentPaddle = new Sprite(gameTextures.smallPlatformTexture);
-	const expandBonus = new Bonus(gameTextures.expandBonusTexture);
-	const narrowBonus = new Bonus(gameTextures.narrowBonusTexture);
-	const splitBonus = new Bonus(gameTextures.splitBonusTexture);
 	const ticker = new Ticker();
 	const graphics = new Graphics();
 	const scoreStyle = new TextStyle({
@@ -61,6 +59,8 @@ import { Brick } from './brick.js';
 
 	ball.x = currentPlatform.x;
 	ball.y = currentPlatform.y-20;
+
+	const bonusArray = [];
 
 	const brickArray = [];
 	const levelMap = [
@@ -210,58 +210,57 @@ import { Brick } from './brick.js';
 							side = key; 
 							} 
 						} 
-						if (side === 'top') { 
-							ballElement.y = brick.y - brick.height / 2 - ballElement.radius ;
-							ballElement.ySpeed = -ballElement.ySpeed;
-						}else if (side === 'bottom') {
-							ballElement.y =  brick.y + brick.height/2 + ballElement.radius;
-							ballElement.ySpeed = -ballElement.ySpeed;
-						}else if (side === 'right') {
-							ballElement.x = brick.x + brick.width/2 + ballElement.radius;
-							ballElement.xSpeed = -ballElement.xSpeed;
-						}else if (side === 'left') {
-							ballElement.x = brick.x - brick.width/2 - ballElement.radius;
-							ballElement.xSpeed = -ballElement.xSpeed;
+
+						switch (side) {
+							case 'top':
+								ballElement.y = brick.y - brick.height / 2 - ballElement.radius ;
+								ballElement.ySpeed = -ballElement.ySpeed;
+								break;
+							case 'bottom':
+								ballElement.y =  brick.y + brick.height/2 + ballElement.radius;
+								ballElement.ySpeed = -ballElement.ySpeed;
+								break;
+							case 'right':
+								ballElement.x = brick.x + brick.width/2 + ballElement.radius;
+								ballElement.xSpeed = -ballElement.xSpeed;
+								break;
+							case 'left':
+								ballElement.x = brick.x - brick.width/2 - ballElement.radius;
+								ballElement.xSpeed = -ballElement.xSpeed;
+								break;
+							default:
+								break;
 						}
-						
-						if (brick.typeID === 3) {
-							score += 10;
-						}else if (brick.typeID === 2) {
-							score += 20;
-						}else if (brick.typeID === 1) {
-							score += 30;
-						}else if (brick.typeID === 0) {
-							score += 40;
+
+						switch (brick.typeID) {
+							case 3:
+								score += 10;
+								break;
+							case 2:
+								score += 20;
+								break;
+							case 1:
+								score += 30;
+								break;
+							case 0:
+								score += 40;
+								break;
+							default:
+								break;
 						}
 
 						switch (brick.num) {
 							case 1:
 							case 3:
-								if (expandBonus.isActive) {
-									break;
-								}
-								expandBonus.x = brick.x;
-								expandBonus.y = brick.y;
-								app.stage.addChild(expandBonus);
-								expandBonus.isActive = true;
+								bonusArray.push(new Bonus(brick.x, brick.y, gameTextures.expandBonusTexture));
 								break;
 							case 4:
 							case 6:
-								if (narrowBonus.isActive) {
-									break;
-								}
-								narrowBonus.x = brick.x;
-								narrowBonus.y = brick.y;
-								app.stage.addChild(narrowBonus);
+								bonusArray.push(new Bonus(brick.x, brick.y, gameTextures.narrowBonusTexture));
 								break;
 							case 7:
 							case 9:
-								if (splitBonus.isActive) {
-									break;
-								}
-								splitBonus.x = brick.x;
-								splitBonus.y = brick.y;
-								app.stage.addChild(splitBonus);
+								bonusArray.push(new Bonus(brick.x, brick.y, gameTextures.splitBonusTexture));
 								break;
 							default:
 								break;
@@ -274,50 +273,41 @@ import { Brick } from './brick.js';
 							scoreCount.text = score;
 							app.stage.removeChild(brick);
 							// break;
+						}	
+
+					}
+					for (let i = 0; i < bonusArray.length; i++) {
+						const bonus = bonusArray[i];
+						app.stage.addChild(bonus);
+						bonus.fall();
+
+						if (rectToRectCollide(currentPlatform, bonus)) {
+							switch (bonus.texture) {
+								case gameTextures.expandBonusTexture:
+									currentPlatform.texture = gameTextures.largePlatformTexture;
+									clampMin = 90;
+									clampMax = 560;
+									app.stage.removeChild(this);
+									break;
+								case gameTextures.smallPlatformTexture:
+									currentPlatform.texture = gameTextures.smallPlatformTexture;
+									clampMin = 60;
+									clampMax = 590;
+									app.stage.removeChild(this);
+									break;
+								case gameTextures.splitBonusTexture:
+									for (let i = 0; i < 2; i++) {
+										ballsArray.push(new Ball(ballElement.x, ballElement.y, Math.floor(Math.random() * 15) - 7, Math.floor(Math.random() * 15) - 7));
+									}
+									break;
+								default:
+									break;
+							}	
 						}
-		
-						
 					}
 				}
-				expandBonus.fall();
-				narrowBonus.fall();
-				splitBonus.fall();
-		
-				// Collision detection for left, right walls and top.
-				if (ballElement.x+ballElement.radius >= app.screen.width-25) {
-					ballElement.x = app.screen.width-25-ballElement.radius;
-					ballElement.xSpeed = -ballElement.xSpeed;
-				}else if (ballElement.x-ballElement.radius <= 25) {
-					ballElement.x = 25+ballElement.radius;
-					ballElement.xSpeed = -ballElement.xSpeed;
-				}else if (ballElement.y-ballElement.radius <= 25) {
-					ballElement.y = 25+ballElement.radius;
-					ballElement.ySpeed = -ballElement.ySpeed;
-				}else if (ballElement.y+ballElement.radius > app.screen.height) {
-					// ball.y = app.screen.height-ball.radius;
-					// ball.ySpeed = -ball.ySpeed;
-					ticker.stop();
-				}
-		
-		
-				if (rectToRectCollide(currentPlatform, expandBonus)) {
-					currentPlatform.texture = gameTextures.largePlatformTexture;
-					clampMin = 90;
-					clampMax = 560;
-					app.stage.removeChild(expandBonus);
-					expandBonus.isActive = false;
-				}else if (rectToRectCollide(currentPlatform, narrowBonus)) {
-					currentPlatform.texture = gameTextures.smallPlatformTexture;
-					clampMin = 60;
-					clampMax = 590;
-					app.stage.removeChild(narrowBonus);
-					narrowBonus.isActive = false;
-				}else if (rectToRectCollide(currentPlatform, splitBonus)) {
-					ballsArray.push(new Ball(gameTextures.ironBallTexture, ball.x, ball.y, -3, -4));
-					app.stage.removeChild(splitBonus);
-					splitBonus.isActive = false;
-				}
-				
+				// Collision detection for left, right, top walls and lower field.
+				collisonDetectionForWalls(ballElement, ballsArray);
 			}
 		}
 	});

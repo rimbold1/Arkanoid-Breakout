@@ -27,3 +27,20 @@ export const rectToRectCollide = function (rect1, rect2) {
         return true;
     }
 };
+
+
+// Collision detection for walls and lower field
+export function collisonDetectionForWalls(ballElement, ballsArray) {
+    if (ballElement.x+ballElement.radius >= app.screen.width-25) {
+        ballElement.x = app.screen.width-25-ballElement.radius;
+        ballElement.xSpeed = -ballElement.xSpeed;
+    }else if (ballElement.x-ballElement.radius <= 25) {
+        ballElement.x = 25+ballElement.radius;
+        ballElement.xSpeed = -ballElement.xSpeed;
+    }else if (ballElement.y-ballElement.radius <= 25) {
+        ballElement.y = 25+ballElement.radius;
+        ballElement.ySpeed = -ballElement.ySpeed;
+    }else if (ballElement.y+ballElement.radius > app.screen.height) {
+        ballsArray.splice(ballElement, 1);
+    }
+}
