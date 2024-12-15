@@ -121,7 +121,7 @@ import { Brick } from './brick.js';
 	// adding object to the stage
 	app.stage.addChild(background);
 	app.stage.addChild(ball);
-	app.stage.addChild(currentPaddle);
+	app.stage.addChild(currentPlatform);
 	brickArray.forEach((brick) => { // Adding bricks to the game stage.
 		app.stage.addChild(brick);
 	});
@@ -168,18 +168,18 @@ import { Brick } from './brick.js';
 				}
 				app.stage.addChild(ballElement);
 				ballElement.move(ticker);
-				if (rectCircleCollide(currentPaddle, ballElement)) { 
+				if (rectCircleCollide(currentPlatform, ballElement)) { 
 					const sidesDistances = { 
-						left: Math.abs(currentPaddle.x - currentPaddle.width / 2 - (ballElement.x + ballElement.radius)), 
-						right: Math.abs(ballElement.x - ballElement.radius - (currentPaddle.x + currentPaddle.width / 2)), 
-						top: Math.abs(currentPaddle.y - currentPaddle.height / 2 - (ballElement.y + ballElement.radius)), 
-						bottom: Math.abs(ballElement.y - ballElement.radius - (currentPaddle.y + currentPaddle.height / 2)), 
+						left: Math.abs(currentPlatform.x - currentPlatform.width / 2 - (ballElement.x + ballElement.radius)), 
+						right: Math.abs(ballElement.x - ballElement.radius - (currentPlatform.x + currentPlatform.width / 2)), 
+						top: Math.abs(currentPlatform.y - currentPlatform.height / 2 - (ballElement.y + ballElement.radius)), 
+						bottom: Math.abs(ballElement.y - ballElement.radius - (currentPlatform.y + currentPlatform.height / 2)), 
 					};
 		
 					let currentMin = Infinity; 
 					let side = null; 
 		
-					ballElement.xSpeed = -(currentPaddle.x - ballElement.x) / currentPaddle.width / 2 * 25;
+					ballElement.xSpeed = -(currentPlatform.x - ballElement.x) / currentPlatform.width / 2 * 25;
 					ballElement.ySpeed = -ballElement.ySpeed;
 		
 				}
@@ -276,39 +276,49 @@ import { Brick } from './brick.js';
 						}	
 
 					}
-					for (let i = 0; i < bonusArray.length; i++) {
-						const bonus = bonusArray[i];
-						app.stage.addChild(bonus);
-						bonus.fall();
 
-						if (rectToRectCollide(currentPlatform, bonus)) {
-							switch (bonus.texture) {
-								case gameTextures.expandBonusTexture:
-									currentPlatform.texture = gameTextures.largePlatformTexture;
-									clampMin = 90;
-									clampMax = 560;
-									app.stage.removeChild(this);
-									break;
-								case gameTextures.smallPlatformTexture:
-									currentPlatform.texture = gameTextures.smallPlatformTexture;
-									clampMin = 60;
-									clampMax = 590;
-									app.stage.removeChild(this);
-									break;
-								case gameTextures.splitBonusTexture:
-									for (let i = 0; i < 2; i++) {
-										ballsArray.push(new Ball(ballElement.x, ballElement.y, Math.floor(Math.random() * 15) - 7, Math.floor(Math.random() * 15) - 7));
-									}
-									break;
-								default:
-									break;
-							}	
-						}
-					}
 				}
+				
 				// Collision detection for left, right, top walls and lower field.
 				collisonDetectionForWalls(ballElement, ballsArray);
 			}
+				for (let i = 0; i < bonusArray.length; i++) {
+					const bonus = bonusArray[i];
+					app.stage.addChild(bonus);
+					bonus.fall();
+					if (bonus.y > app.screen.height) {
+						app.stage.removeChild(bonus);
+						bonusArray.splice(bonusArray.indexOf(bonus), 1);
+						continue;
+					}
+					if (rectToRectCollide(currentPlatform, bonus)) {
+							
+						switch (bonus.texture) {
+							case gameTextures.expandBonusTexture:
+								currentPlatform.texture = gameTextures.largePlatformTexture;
+								clampMin = 90;
+								clampMax = 560;
+								break;
+							case gameTextures.smallPlatformTexture:
+								currentPlatform.texture = gameTextures.smallPlatformTexture;
+								clampMin = 60;
+								clampMax = 590;
+								break;
+							case gameTextures.splitBonusTexture:
+								// for (let i = 0; i < 2; i++) {
+								// 	ballsArray.push(new Ball(ball.x, ball.y, Math.floor(Math.random() * 15) - 7, Math.floor(Math.random() * 15) - 7));
+									
+								// }
+								break;
+							default:
+								break;
+						}
+						app.stage.removeChild(bonus);
+						bonusArray.splice(bonusArray.indexOf(bonus), 1);
+						i--;
+						
+					}
+				}
 		}
 	});
 	
