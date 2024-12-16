@@ -289,20 +289,24 @@ import { Brick } from './brick.js';
 					if (bonus.y > app.screen.height) {
 						app.stage.removeChild(bonus);
 						bonusArray.splice(bonusArray.indexOf(bonus), 1);
+						i--;
 						continue;
+
 					}
 					if (rectToRectCollide(currentPlatform, bonus)) {
-							
+
 						switch (bonus.texture) {
 							case gameTextures.expandBonusTexture:
 								currentPlatform.texture = gameTextures.largePlatformTexture;
 								clampMin = 90;
 								clampMax = 560;
+								console.log(bonus.texture);
 								break;
 							case gameTextures.smallPlatformTexture:
 								currentPlatform.texture = gameTextures.smallPlatformTexture;
 								clampMin = 60;
 								clampMax = 590;
+								console.log(bonus.texture);
 								break;
 							case gameTextures.splitBonusTexture:
 								// for (let i = 0; i < 2; i++) {
