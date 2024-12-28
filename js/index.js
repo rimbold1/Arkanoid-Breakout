@@ -5,6 +5,8 @@ import { rectCircleCollide, rectToRectCollide, collisonDetectionForWalls } from 
 import { clamp } from './clamp.js';
 import { Bonus } from './bonus.js';
 import { Brick } from './brick.js';
+import { DropShadowFilter } from 'pixi-filters';
+
 
 // Asynchronous IIFE
 (async () => {
@@ -17,6 +19,14 @@ import { Brick } from './brick.js';
 		width: 650,
 		height: 800
 	});
+
+	const scoresByType = {
+		5: 100,
+		3: 10,
+		2: 20,
+		1: 30,
+		0: 40,
+	};
 
 	document.body.appendChild(app.canvas);
 
@@ -57,6 +67,13 @@ import { Brick } from './brick.js';
 	currentPlatform.x = app.screen.width/2;
 	currentPlatform.y = 770;
 	currentPlatform.anchor.set(0.5);
+			var dropShadowFilter = new DropShadowFilter();
+			dropShadowFilter.color = '#0c120f';
+			dropShadowFilter.alpha = 1;
+			dropShadowFilter.blur = 1;
+			dropShadowFilter.distance = 50;
+			
+			currentPlatform.filters = [dropShadowFilter];
 
 	const bonusArray = [];
 
@@ -129,25 +146,29 @@ import { Brick } from './brick.js';
 	let isDown = true;
 	let isNot = true;
 	window.addEventListener('mousedown', function() {
-		isDown = true;
+		// isDown = true;
 	});
+
+	ball.x = currentPlatform.x;
+	ball.y = currentPlatform.y-20;
 
 	window.addEventListener('mousemove', (event) => {
 		let pos = event.clientX;
+		currentPlatform.x = clamp(pos, clampMin, clampMax);
 		if (isDown) {
-			currentPlatform.x = clamp(pos, clampMin, clampMax);
+			
 			ball.x = currentPlatform.x;
 			ball.y = currentPlatform.y-20;
 		}
-		if (isNot === true) {
-			ball.x = currentPlatform.x;
-			ball.y = currentPlatform.y-20;
-		}
+		// if (isNot === true) {
+		// 	ball.x = currentPlatform.x;
+		// 	ball.y = currentPlatform.y-20;
+		// }
 
 	});
 	
 	window.addEventListener('mouseup', function () {
-		// isDown = false;
+		isDown = false;
 	});
 	
 	let movementReady = false;
@@ -161,13 +182,14 @@ import { Brick } from './brick.js';
 	ticker.add((ticker) => {
 		
 		if (movementReady) {
+			if (ballsArray.length < 1) {
+				ticker.stop();
+				movementReady = false;
+			}
+
 			for (let i = 0; i < ballsArray.length; i++) {
 				const ballElement = ballsArray[i];
-				if (ballsArray.length < 1) {
-					ticker.stop();
-					movementReady = false;
-					break;
-				}
+
 				app.stage.addChild(ballElement);
 				ballElement.move(ticker);
 				if (rectCircleCollide(currentPlatform, ballElement)) { 
@@ -190,7 +212,7 @@ import { Brick } from './brick.js';
 		
 					const brick = brickArray[i];
 					// Перевірка на наявність блоків, якщо  немає то стоп-гра.
-					if (brickArray.every(brick => brick.x === null && brick.y === null )) { 
+					if (brickArray.every(brick => (brick.x === null && brick.y === null) || brick.typeID === 4)) { 
 						ticker.stop();
 					}
 		
@@ -234,21 +256,8 @@ import { Brick } from './brick.js';
 								break;
 						}
 
-						switch (brick.typeID) {
-							case 3:
-								score += 10;
-								break;
-							case 2:
-								score += 20;
-								break;
-							case 1:
-								score += 30;
-								break;
-							case 0:
-								score += 40;
-								break;
-							default:
-								break;
+						if (scoresByType[brick.typeID]) {
+							score += scoresByType[brick.typeID];
 						}
 
 						switch (brick.num) {
@@ -274,7 +283,7 @@ import { Brick } from './brick.js';
 							brick.y = null;
 							scoreCount.text = score;
 							app.stage.removeChild(brick);
-							// break;
+							break;
 						}	
 
 					}
@@ -309,10 +318,15 @@ import { Brick } from './brick.js';
 								clampMax = 590;
 								break;
 							case gameTextures.splitBonusTexture:
-								for (let i = 0; i < 2; i++) {
-									ballsArray.push(new Ball(gameTextures.ironBallTexture, ball.x, ball.y, Math.floor(Math.random() * 15) - 7, ball.ySpeed));
-									
+								let ballsCounter = ballsArray.length;
+								for (let j = 0; j < ballsCounter; j++) {
+									const currentBall = ballsArray[j];
+									for (let k = 0; k < 2; k++) {
+										ballsArray.push(new Ball(gameTextures.ironBallTexture, currentBall.x, currentBall.y, Math.floor(Math.random() * 15) - 7, currentBall.ySpeed));
+										
+									}
 								}
+
 								break;
 							default:
 								break;

@@ -1,3 +1,4 @@
+import { DropShadowFilter } from 'pixi-filters';
 import {Sprite} from 'pixi.js';
 
 export class Ball extends Sprite {
@@ -12,6 +13,14 @@ export class Ball extends Sprite {
         this.anchor.set(0.5);
         this.xSpeed = xSpeed;
         this.ySpeed = ySpeed;
+
+        var dropShadowFilter = new DropShadowFilter();
+        dropShadowFilter.color = '#0c120f';
+        dropShadowFilter.alpha = 1;
+        dropShadowFilter.blur = 1;
+        dropShadowFilter.distance = 50;
+        
+        this.filters = [dropShadowFilter];
     }
 
     move(ticker) {
