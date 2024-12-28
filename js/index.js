@@ -6,7 +6,7 @@ import { clamp } from './clamp.js';
 import { Bonus } from './bonus.js';
 import { Brick } from './brick.js';
 import { DropShadowFilter } from 'pixi-filters';
-
+import { Container } from "pixi.js";
 
 // Asynchronous IIFE
 (async () => {
@@ -32,6 +32,20 @@ import { DropShadowFilter } from 'pixi-filters';
 
 	// init global constances
 	
+	const winTextStyle = new TextStyle({
+		fontFamily: 'Arial',            // Font family
+		fontSize: 26,                    // Font size
+		fontStyle: 'italic',             // Style of font: normal, italic, or oblique
+		fontWeight: 'bold',
+		fill: '#ff9999',    // Gradient fill (array for gradient)
+		stroke: '#4a1850',
+	})
+	const winTextPopUp = new Text({
+		text: "you WIN!",
+		style: winTextStyle
+	});
+
+	const winPopUp = new Container();
 	const background = new Sprite(gameTextures.fieldTexture);
 	const ball = new Ball(gameTextures.ironBallTexture, app.screen/2, app.screen/2, 0, -7);
 	const currentPlatform = new Sprite(gameTextures.smallPlatformTexture);
@@ -46,6 +60,7 @@ import { DropShadowFilter } from 'pixi-filters';
 		stroke: '#4a1850',
 	});
 	
+	winPopUp.addChild(winTextPopUp);
 	const ballsArray = [];
 	ballsArray.push(ball);
 
@@ -100,7 +115,9 @@ import { DropShadowFilter } from 'pixi-filters';
 	scoreCount.anchor.set(0.5)
 	scoreCount.y = 35;
 	app.stage.addChild(scoreCount);
-
+	winPopUp.x = app.screen.width/2;
+	winPopUp.y = app.screen.height/2;
+	
 	function addBricks(levelMap, brickTextures) { // Building level by adding bricks to the game
 		let xPos = 115;
 		let yPos = 200;
@@ -141,6 +158,7 @@ import { DropShadowFilter } from 'pixi-filters';
 		app.stage.addChild(brick);
 	});
 	app.stage.addChild(scoreCount); // Adding score counter.
+	app.stage.addChild(winPopUp);
 
 	// Moving platform events
 	let isDown = true;
@@ -193,15 +211,15 @@ import { DropShadowFilter } from 'pixi-filters';
 				app.stage.addChild(ballElement);
 				ballElement.move(ticker);
 				if (rectCircleCollide(currentPlatform, ballElement)) { 
-					const sidesDistances = { 
-						left: Math.abs(currentPlatform.x - currentPlatform.width / 2 - (ballElement.x + ballElement.radius)), 
-						right: Math.abs(ballElement.x - ballElement.radius - (currentPlatform.x + currentPlatform.width / 2)), 
-						top: Math.abs(currentPlatform.y - currentPlatform.height / 2 - (ballElement.y + ballElement.radius)), 
-						bottom: Math.abs(ballElement.y - ballElement.radius - (currentPlatform.y + currentPlatform.height / 2)), 
-					};
+					// const sidesDistances = { 
+					// 	left: Math.abs(currentPlatform.x - currentPlatform.width / 2 - (ballElement.x + ballElement.radius)), 
+					// 	right: Math.abs(ballElement.x - ballElement.radius - (currentPlatform.x + currentPlatform.width / 2)), 
+					// 	top: Math.abs(currentPlatform.y - currentPlatform.height / 2 - (ballElement.y + ballElement.radius)), 
+					// 	bottom: Math.abs(ballElement.y - ballElement.radius - (currentPlatform.y + currentPlatform.height / 2)), 
+					// };
 		
-					let currentMin = Infinity; 
-					let side = null; 
+					// let currentMin = Infinity; 
+					// let side = null; 
 		
 					ballElement.xSpeed = -(currentPlatform.x - ballElement.x) / currentPlatform.width / 2 * 25;
 					ballElement.ySpeed = -ballElement.ySpeed;
