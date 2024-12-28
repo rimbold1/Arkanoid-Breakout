@@ -41,6 +41,9 @@ export function collisonDetectionForWalls(ballElement, ballsArray) {
         ballElement.y = 25+ballElement.radius;
         ballElement.ySpeed = -ballElement.ySpeed;
     }else if (ballElement.y+ballElement.radius > app.screen.height) {
-        ballsArray.splice(ballElement, 1);
+        app.stage.removeChild(ballElement);
+        ballsArray.splice(ballsArray.indexOf(ballElement), 1);
+        
     }
+    return console.log(ballsArray.length);
 }

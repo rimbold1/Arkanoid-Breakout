@@ -24,7 +24,7 @@ import { Brick } from './brick.js';
 	
 	const background = new Sprite(gameTextures.fieldTexture);
 	const ball = new Ball(gameTextures.ironBallTexture, app.screen/2, app.screen/2, 0, -7);
-	const currentPaddle = new Sprite(gameTextures.smallPlatformTexture);
+	const currentPlatform = new Sprite(gameTextures.smallPlatformTexture);
 	const ticker = new Ticker();
 	const graphics = new Graphics();
 	const scoreStyle = new TextStyle({
@@ -39,6 +39,7 @@ import { Brick } from './brick.js';
 	const ballsArray = [];
 	ballsArray.push(ball);
 
+
 	let score = 0;
 	const scoreCount = new Text({text : score,
 		style : scoreStyle
@@ -47,7 +48,7 @@ import { Brick } from './brick.js';
 	// const bonusVelocity = 2.5;
 	let clampMin = 60;
 	let clampMax = 590;
-	let currentPlatform = currentPaddle;
+	// let currentPlatform = currentPaddle;
 	
 	graphics.rect(50, 50, 650, 800);
 	graphics.fill(0xde3249);
@@ -56,9 +57,6 @@ import { Brick } from './brick.js';
 	currentPlatform.x = app.screen.width/2;
 	currentPlatform.y = 770;
 	currentPlatform.anchor.set(0.5);
-
-	ball.x = currentPlatform.x;
-	ball.y = currentPlatform.y-20;
 
 	const bonusArray = [];
 
@@ -138,6 +136,8 @@ import { Brick } from './brick.js';
 		let pos = event.clientX;
 		if (isDown) {
 			currentPlatform.x = clamp(pos, clampMin, clampMax);
+			ball.x = currentPlatform.x;
+			ball.y = currentPlatform.y-20;
 		}
 		if (isNot === true) {
 			ball.x = currentPlatform.x;
@@ -165,6 +165,8 @@ import { Brick } from './brick.js';
 				const ballElement = ballsArray[i];
 				if (ballsArray.length < 1) {
 					ticker.stop();
+					movementReady = false;
+					break;
 				}
 				app.stage.addChild(ballElement);
 				ballElement.move(ticker);
@@ -300,19 +302,17 @@ import { Brick } from './brick.js';
 								currentPlatform.texture = gameTextures.largePlatformTexture;
 								clampMin = 90;
 								clampMax = 560;
-								console.log(bonus.texture);
 								break;
-							case gameTextures.smallPlatformTexture:
+							case gameTextures.narrowBonusTexture:
 								currentPlatform.texture = gameTextures.smallPlatformTexture;
 								clampMin = 60;
 								clampMax = 590;
-								console.log(bonus.texture);
 								break;
 							case gameTextures.splitBonusTexture:
-								// for (let i = 0; i < 2; i++) {
-								// 	ballsArray.push(new Ball(ball.x, ball.y, Math.floor(Math.random() * 15) - 7, Math.floor(Math.random() * 15) - 7));
+								for (let i = 0; i < 2; i++) {
+									ballsArray.push(new Ball(gameTextures.ironBallTexture, ball.x, ball.y, Math.floor(Math.random() * 15) - 7, ball.ySpeed));
 									
-								// }
+								}
 								break;
 							default:
 								break;
