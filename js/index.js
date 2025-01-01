@@ -82,7 +82,6 @@ import { Container } from "pixi.js";
 	// const bonusVelocity = 2.5;
 	let clampMin = 60;
 	let clampMax = 590;
-	// let currentPlatform = currentPaddle;
 
 	// moving platfrom basic settings (position and anchor)
 	currentPlatform.x = app.screen.width/2;
@@ -164,7 +163,7 @@ import { Container } from "pixi.js";
 	});
 	app.stage.addChild(scoreCount); // Adding score counter.
 	app.stage.addChild(winPopUpContainer);
-	// app.stage.addChild(endGameBG);
+
 	// Moving platform events
 	let isDown = true;
 	let isNot = true;
@@ -183,11 +182,6 @@ import { Container } from "pixi.js";
 			ball.x = currentPlatform.x;
 			ball.y = currentPlatform.y-20;
 		}
-		// if (isNot === true) {
-		// 	ball.x = currentPlatform.x;
-		// 	ball.y = currentPlatform.y-20;
-		// }
-
 	});
 	
 	window.addEventListener('mouseup', function () {
@@ -215,16 +209,7 @@ import { Container } from "pixi.js";
 
 				app.stage.addChild(ballElement);
 				ballElement.move(ticker);
-				if (rectCircleCollide(currentPlatform, ballElement)) { 
-					// const sidesDistances = { 
-					// 	left: Math.abs(currentPlatform.x - currentPlatform.width / 2 - (ballElement.x + ballElement.radius)), 
-					// 	right: Math.abs(ballElement.x - ballElement.radius - (currentPlatform.x + currentPlatform.width / 2)), 
-					// 	top: Math.abs(currentPlatform.y - currentPlatform.height / 2 - (ballElement.y + ballElement.radius)), 
-					// 	bottom: Math.abs(ballElement.y - ballElement.radius - (currentPlatform.y + currentPlatform.height / 2)), 
-					// };
-		
-					// let currentMin = Infinity; 
-					// let side = null; 
+				if (rectCircleCollide(currentPlatform, ballElement)) {  
 		
 					ballElement.xSpeed = -(currentPlatform.x - ballElement.x) / currentPlatform.width / 2 * 25;
 					ballElement.ySpeed = -ballElement.ySpeed;
