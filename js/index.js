@@ -34,23 +34,22 @@ import { Container } from "pixi.js";
 	
 	const winTextStyle = new TextStyle({
 		fontFamily: 'Arial',            // Font family
-		fontSize: 26,                    // Font size
-		fontStyle: 'italic',             // Style of font: normal, italic, or oblique
+		fontSize: 56,                    // Font size
+		// fontStyle: 'italic',             // Style of font: normal, italic, or oblique
 		fontWeight: 'bold',
-		fill: '#ff9999',    // Gradient fill (array for gradient)
+		fill: '#fc7b0a',    // Gradient fill (array for gradient)
 		stroke: '#4a1850',
 	})
 	const winTextPopUp = new Text({
-		text: "you WIN!",
-		style: winTextStyle
+		text: "YOU WIN",
+		style: winTextStyle,
 	});
-
-	const winPopUp = new Container();
+	const winPopUpContainer = new Container();
+	const endGameBG = new Graphics();
 	const background = new Sprite(gameTextures.fieldTexture);
 	const ball = new Ball(gameTextures.ironBallTexture, app.screen/2, app.screen/2, 0, -7);
 	const currentPlatform = new Sprite(gameTextures.smallPlatformTexture);
 	const ticker = new Ticker();
-	const graphics = new Graphics();
 	const scoreStyle = new TextStyle({
 		fontFamily: 'Arial',            // Font family
 		fontSize: 26,                    // Font size
@@ -59,24 +58,31 @@ import { Container } from "pixi.js";
 		fill: '#ff9999',    // Gradient fill (array for gradient)
 		stroke: '#4a1850',
 	});
-	
-	winPopUp.addChild(winTextPopUp);
-	const ballsArray = [];
-	ballsArray.push(ball);
-
-
 	let score = 0;
 	const scoreCount = new Text({text : score,
-		style : scoreStyle
+		style : scoreStyle,
+		
 	});
+
+
+	endGameBG.rect(winPopUpContainer.x, winPopUpContainer.y, app.screen.width, app.screen.height);
+	endGameBG.fill('#0c120f');
+	endGameBG.alpha = 0.7;
+	winPopUpContainer.x = app.screen.x;
+	winPopUpContainer.y = app.screen.y;
+	winTextPopUp.anchor.set(0.5)
+	winTextPopUp.x = endGameBG.width/2;
+	winTextPopUp.y = endGameBG.height/2;
+	winPopUpContainer.addChild(endGameBG);
+	winPopUpContainer.addChild(winTextPopUp);
+	winPopUpContainer.visible = false;
+	const ballsArray = [];
+	ballsArray.push(ball);
 
 	// const bonusVelocity = 2.5;
 	let clampMin = 60;
 	let clampMax = 590;
 	// let currentPlatform = currentPaddle;
-	
-	graphics.rect(50, 50, 650, 800);
-	graphics.fill(0xde3249);
 
 	// moving platfrom basic settings (position and anchor)
 	currentPlatform.x = app.screen.width/2;
@@ -115,8 +121,7 @@ import { Container } from "pixi.js";
 	scoreCount.anchor.set(0.5)
 	scoreCount.y = 35;
 	app.stage.addChild(scoreCount);
-	winPopUp.x = app.screen.width/2;
-	winPopUp.y = app.screen.height/2;
+
 	
 	function addBricks(levelMap, brickTextures) { // Building level by adding bricks to the game
 		let xPos = 115;
@@ -158,8 +163,8 @@ import { Container } from "pixi.js";
 		app.stage.addChild(brick);
 	});
 	app.stage.addChild(scoreCount); // Adding score counter.
-	app.stage.addChild(winPopUp);
-
+	app.stage.addChild(winPopUpContainer);
+	// app.stage.addChild(endGameBG);
 	// Moving platform events
 	let isDown = true;
 	let isNot = true;
@@ -232,6 +237,7 @@ import { Container } from "pixi.js";
 					// Перевірка на наявність блоків, якщо  немає то стоп-гра.
 					if (brickArray.every(brick => (brick.x === null && brick.y === null) || brick.typeID === 4)) { 
 						ticker.stop();
+						winPopUpContainer.visible = true;
 					}
 		
 					if (rectCircleCollide(brick, ballElement)) {
@@ -288,7 +294,6 @@ import { Container } from "pixi.js";
 								bonusArray.push(new Bonus(brick.x, brick.y, gameTextures.narrowBonusTexture));
 								break;
 							case 7:
-							case 9:
 								bonusArray.push(new Bonus(brick.x, brick.y, gameTextures.splitBonusTexture));
 								break;
 							default:
