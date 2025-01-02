@@ -1,7 +1,7 @@
 import { Application, Assets, Sprite, Ticker, Graphics, Text, TextStyle } from 'pixi.js';
 import { gameTextures } from './texturesPaths.js';
 import { Ball } from './ball.js';
-import { rectCircleCollide, rectToRectCollide, collisonDetectionForWalls } from './CollisionDetectionFunc.js';
+import { rectCircleCollide, rectToRectCollide, collisonDetectionForWalls } from './collisionDetectionFunc.js';
 import { clamp } from './clamp.js';
 import { Bonus } from './bonus.js';
 import { Brick } from './brick.js';
