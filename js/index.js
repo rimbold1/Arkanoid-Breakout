@@ -41,7 +41,7 @@ import { Container } from "pixi.js";
 		stroke: '#4a1850',
 	})
 	const winTextPopUp = new Text({
-		text: "YOU WIN",
+		text: "YOU WIN!",
 		style: winTextStyle,
 	});
 	const winPopUpContainer = new Container();
