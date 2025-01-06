@@ -20,17 +20,21 @@ import { Container } from "pixi.js";
 		height: 800
 	});
 
-	const scoresByType = {
-		5: 100,
-		3: 10,
-		2: 20,
-		1: 30,
-		0: 40,
-	};
-
 	document.body.appendChild(app.canvas);
 
-	// init global constances
+	function initializeGame() {
+		// Clearing the main stage.
+		app.stage.removeChildren();
+
+		// Initialization of the game objects.
+		const scoresByType = {
+			5: 100,
+			3: 10,
+			2: 20,
+			1: 30,
+			0: 40,
+		};
+			// init global constances
 	
 	const winTextStyle = new TextStyle({
 		fontFamily: 'Arial',            // Font family
@@ -63,19 +67,24 @@ import { Container } from "pixi.js";
 		style : scoreStyle,
 		
 	});
-
+	scoreCount.anchor.set(0.5);
+	scoreCount.x = app.screen.x/2;
 
 	endGameBG.rect(winPopUpContainer.x, winPopUpContainer.y, app.screen.width, app.screen.height);
 	endGameBG.fill('#0c120f');
 	endGameBG.alpha = 0.7;
+
 	winPopUpContainer.x = app.screen.x;
 	winPopUpContainer.y = app.screen.y;
+
 	winTextPopUp.anchor.set(0.5)
 	winTextPopUp.x = endGameBG.width/2;
 	winTextPopUp.y = endGameBG.height/2;
+
 	winPopUpContainer.addChild(endGameBG);
 	winPopUpContainer.addChild(winTextPopUp);
 	winPopUpContainer.visible = false;
+	
 	const ballsArray = [];
 	ballsArray.push(ball);
 
@@ -119,7 +128,6 @@ import { Container } from "pixi.js";
 	scoreCount.x = app.screen.width/2;
 	scoreCount.anchor.set(0.5)
 	scoreCount.y = 35;
-	app.stage.addChild(scoreCount);
 
 	
 	function addBricks(levelMap, brickTextures) { // Building level by adding bricks to the game
@@ -201,6 +209,9 @@ import { Container } from "pixi.js";
 		if (movementReady) {
 			if (ballsArray.length < 1) {
 				ticker.stop();
+				winTextPopUp.text = "YOU LOSE! \n" + "your score: " + scoreCount.text;
+				winPopUpContainer.visible = true;
+
 				movementReady = false;
 			}
 
@@ -274,7 +285,6 @@ import { Container } from "pixi.js";
 							case 3:
 								bonusArray.push(new Bonus(brick.x, brick.y, gameTextures.expandBonusTexture));
 								break;
-							case 4:
 							case 6:
 								bonusArray.push(new Bonus(brick.x, brick.y, gameTextures.narrowBonusTexture));
 								break;
@@ -347,8 +357,16 @@ import { Container } from "pixi.js";
 				}
 		}
 	});
-	
 	ticker.start();
-	
+	};
 
+	initializeGame();
+	function resetGame() {
+		initializeGame();
+	};
+	window.addEventListener('keydown', (event) => {
+		if (event.key === 'r') {
+			resetGame();
+		}
+	})
 })();
