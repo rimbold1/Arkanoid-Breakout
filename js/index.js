@@ -22,10 +22,6 @@ import { Container } from "pixi.js";
 
 	document.body.appendChild(app.canvas);
 
-	function initializeGame() {
-		// Clearing the main stage.
-		app.stage.removeChildren();
-
 		// Initialization of the game objects.
 		const scoresByType = {
 			5: 100,
@@ -34,7 +30,7 @@ import { Container } from "pixi.js";
 			1: 30,
 			0: 40,
 		};
-			// init global constances
+	// init global constances
 	
 	const winTextStyle = new TextStyle({
 		fontFamily: 'Arial',            // Font family
@@ -211,7 +207,7 @@ import { Container } from "pixi.js";
 				ticker.stop();
 				winTextPopUp.text = "YOU LOSE! \n" + "your score: " + scoreCount.text;
 				winPopUpContainer.visible = true;
-
+				
 				movementReady = false;
 			}
 
@@ -357,16 +353,8 @@ import { Container } from "pixi.js";
 				}
 		}
 	});
+	
 	ticker.start();
-	};
+	
 
-	initializeGame();
-	function resetGame() {
-		initializeGame();
-	};
-	window.addEventListener('keydown', (event) => {
-		if (event.key === 'r') {
-			resetGame();
-		}
-	})
 })();
